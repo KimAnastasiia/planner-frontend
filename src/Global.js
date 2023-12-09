@@ -1,1 +1,1 @@
-export let backendUrl = "http://localhost:3001"
+export let backendUrl = "https://vercel.com/kimanastasiia/amazon-discounts-backend"
