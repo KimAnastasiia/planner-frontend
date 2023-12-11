@@ -1,1 +1,1 @@
-export let backendUrl = "https://vercel.com/kimanastasiia/amazon-discounts-backend"
+export let backendUrl = process.env.REACT_APP_BACKEND_BASE_URL

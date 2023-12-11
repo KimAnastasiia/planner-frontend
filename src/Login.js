@@ -7,26 +7,28 @@ import { backendUrl } from './Global';
 
 const Login = () => {
 
-  const login = useGoogleLogin({onSuccess: tokenResponse =>{
-    checkUser(tokenResponse.access_token)
-  }});
+  const login = useGoogleLogin({
+    onSuccess: tokenResponse => {
+      checkUser(tokenResponse.access_token)
+    }
+  });
 
- const checkUser=async(access_token)=>{
-  localStorage.setItem('access_token',access_token);
+  const checkUser = async (access_token) => {
+    localStorage.setItem('access_token', access_token);
 
-  let response = await fetch(backendUrl + "/users?access_token="+access_token)
-
-  if(response.ok){
-    console.log("Logined")
+    let response = await fetch(backendUrl + "/users?access_token=" + access_token)
+    localStorage.setItem("apiKey", access_token)
+    if (response.ok) {
+      console.log("Logined")
+    }
+   
   }
-  console.log(response)
- }
 
   return (
-    <Flex justify='center' align='center' style={{minHeight:800}}>
-    <Form.Item >
-      <Button style={{width:"100%", marginTop:20}} type='primary' onClick={() => login()}>  Sign in with Google 🚀</Button>
-    </Form.Item>
+    <Flex justify='center' align='center' style={{ minHeight: 800 }}>
+      <Form.Item >
+        <Button style={{ width: "100%", marginTop: 20 }} type='primary' onClick={() => login()}>  Sign in with Google 🚀</Button>
+      </Form.Item>
     </Flex>)
 }
 
