@@ -1,11 +1,11 @@
 
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import "antd/dist/reset.css"
-import { Layout, Menu, notification } from "antd"
+import { Layout, notification } from "antd"
 import { useEffect, useState } from "react";
 import Login from "./Login";
-
-
+import MenuComponent from "./Menu";
+import { Button, Divider, Flex, Radio } from 'antd';
 
 
 let App = () => {
@@ -51,22 +51,10 @@ let App = () => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {contextHolder}
-      <Header>
-        {!login &&
-          <Menu theme="dark" mode="horizontal" items={[
-            { key: "menuLogin", label: <Link to="/login">Login</Link> },
-          ]}>
-          </Menu>
-        }
-
-        {login &&
-          <Menu theme="dark" mode="horizontal" items={[
-
-            { key: "menuDisconnect", label: <Link to="#" onClick={disconnect} >Disconnect</Link> },
-          ]}>
-          </Menu>
-        }
-
+      <Header style={{backgroundColor:"#E8D913"}}>
+        <Flex align='center' justify="center" style={{ height:"100%", width:"100%"}}>
+          <MenuComponent/>
+        </Flex>
       </Header>
 
       <Content style={{ padding: "20px 50px" }}>
