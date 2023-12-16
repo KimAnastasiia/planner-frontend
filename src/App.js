@@ -4,8 +4,9 @@ import "antd/dist/reset.css"
 import { Layout, notification } from "antd"
 import { useEffect, useState } from "react";
 import Login from "./Login";
-import MenuComponent from "./Menu";
+import MenuComponent from "./Components/Menu";
 import { Button, Divider, Flex, Radio } from 'antd';
+import Registration from "./Components/Registration";
 
 
 let App = () => {
@@ -62,7 +63,9 @@ let App = () => {
           <Route path="/login" element={
             <Login openNotification={openNotification} />
           }></Route>
-
+          <Route path="/registration" element={
+            <Registration openNotification={openNotification} />
+          }></Route>
         </Routes>
       </Content>
 
