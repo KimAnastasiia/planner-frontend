@@ -4,6 +4,7 @@ import { Flex, Radio } from 'antd';
 import { useGoogleLogin } from '@react-oauth/google';
 import { backendUrl } from '../Global';
 import { useEffect, useState } from "react";
+import { wait } from '@testing-library/user-event/dist/utils';
 
 const Registration = () => {
 
@@ -22,7 +23,10 @@ const Registration = () => {
                 email:email
             })
         })
-
+        if(response.ok){
+            let data = await response.json()
+            console.log(data)
+        }
      
     }
     const login = useGoogleLogin({

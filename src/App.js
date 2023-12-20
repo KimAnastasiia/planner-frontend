@@ -7,6 +7,7 @@ import Login from "./Login";
 import MenuComponent from "./Components/Menu";
 import { Button, Divider, Flex, Radio } from 'antd';
 import Registration from "./Components/Registration";
+import MenuApiComponent from "./Components/MenuApi";
 
 
 let App = () => {
@@ -52,6 +53,7 @@ let App = () => {
   return (
     <Layout style={{ minHeight: "100vh" }}>
       {contextHolder}
+
       <Header style={{backgroundColor:"#E8D913"}}>
         <Flex align='center' justify="center" style={{ height:"100%", width:"100%"}}>
           <MenuComponent/>
