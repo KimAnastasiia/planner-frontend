@@ -15,7 +15,7 @@ let MenuComponent = () => {
       </Flex>
       <Flex>
 
-        <Button type="text" shape="round" size={size} style={{color:"#933D55"}}>
+        <Button onClick={()=>{navigate("/login")}} type="text" shape="round" size={size} style={{color:"#933D55"}}>
           Iniciar sesion
         </Button>
 

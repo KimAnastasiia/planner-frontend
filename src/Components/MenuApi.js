@@ -10,6 +10,11 @@ let MenuApiComponent = () => {
   let [open, setOpen] = useState(false);
   const text = 'Are you sure to delete this task?';
   const description = 'Delete the task';
+  
+  let disconnect = async () => {
+    localStorage.removeItem("access_token");
+    navigate("/login")
+  }
   return (
     <Flex justify="space-between" align='center' style={{ height: "100%", width: "90%" }} >
       <Flex align='center' style={{ textAlign: "center", height: "100%" }}>
@@ -36,6 +41,9 @@ let MenuApiComponent = () => {
         </Button>
         <Button onClick={() => { navigate("/createDate") }} type="primary" shape="round" size={size} style={{ backgroundColor: "#9D7D6F", marginLeft: 10 }}>
           + Crear
+        </Button>
+        <Button onClick={disconnect} type="dashed" shape="round" size={size} style={{marginLeft: 10 }}>
+          Exit
         </Button>
       </Flex>
     </Flex>

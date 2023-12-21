@@ -6,22 +6,20 @@ import { backendUrl } from '../Global';
 import { useEffect, useState } from "react";
 import { wait } from '@testing-library/user-event/dist/utils';
 import { useNavigate } from "react-router-dom";
-const Registration = () => {
+const Login = () => {
 
-    let [email, setEmail] = useState("");
-    let [password, setPassword] = useState("");
-    let [userName, setUserName] = useState("");
+    let [email, setEmail] = useState(false);
+    let [password, setPassword] = useState(false);
     let navigate = useNavigate()
     let CreateAccount = async () => {
 
-        let response = await fetch("http://localhost:3001/users", {
+        let response = await fetch("http://localhost:3001/users/verification", {
 
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                name:userName,
                 password:password,
                 email:email
             })
@@ -50,6 +48,7 @@ const Registration = () => {
 
         let response = await fetch(backendUrl + "/users?access_token=" + access_token)
 
+        
         if (response.ok) {
             console.log("Logined")
         }
@@ -62,7 +61,7 @@ const Registration = () => {
 
 
                 <Flex align="center" justify='center' vertical style={{ width: "100%", height: "60%", }}>
-                    <h1>Register and plan your day!</h1>
+                    <h1>Log in and plan again with ease</h1>
                     <Form
                         name="basic"
                         labelCol={{
@@ -91,19 +90,7 @@ const Registration = () => {
                         >
                             <Input type="email" onChange={(e)=>{setEmail(e.target.value)}} />
                         </Form.Item>
-                        <Form.Item
-                            label="Username"
-                            name="username"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: 'Please input your username!',
-                                },
-                            ]}
-                        >
-                            <Input onChange={(e)=>{setUserName(e.target.value)}}/>
-                        </Form.Item>
-
+                        
                         <Form.Item
                             label="Password"
                             name="password"
@@ -122,7 +109,7 @@ const Registration = () => {
                         >
 
                             <Button onClick={CreateAccount} shape="round" style={{ backgroundColor: "#933D55", width: "300px", height: 50, fontSize: 17, }} type="primary" htmlType="submit">
-                                Registrate
+                                Login
                             </Button>
 
                         </Form.Item>
@@ -150,4 +137,4 @@ const Registration = () => {
     )
 }
 
-export default Registration;
+export default Login;

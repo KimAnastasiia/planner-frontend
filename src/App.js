@@ -3,12 +3,12 @@ import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom"
 import "antd/dist/reset.css"
 import { Layout, notification } from "antd"
 import { useEffect, useState } from "react";
-import Login from "./Login";
 import MenuComponent from "./Components/Menu";
 import { Button, Divider, Flex, Radio } from 'antd';
 import Registration from "./Components/Registration";
 import MenuApiComponent from "./Components/MenuApi";
-
+import Login from "./Components/Login";
+import CreateMeeting from "./Components/CreateMeeting";
 
 let App = () => {
 
@@ -20,11 +20,11 @@ let App = () => {
 
   useEffect(() => {
     checkLoginIsActive();
-  }, [localStorage.getItem("apiKey")])
+  }, [localStorage.getItem("access_token")])
 
   let checkLoginIsActive = async () => {
 
-    if (localStorage.getItem("apiKey") == null) {
+    if (localStorage.getItem("access_token") == null) {
       setLogin(false);
       return;
     } else {
@@ -41,11 +41,7 @@ let App = () => {
     });
   };
 
-  let disconnect = async () => {
-    localStorage.removeItem("apiKey");
-    setLogin(false)
-    navigate("/login")
-  }
+
 
 
   let { Header, Content, Footer } = Layout;
@@ -56,7 +52,8 @@ let App = () => {
 
       <Header style={{backgroundColor:"#E8D913"}}>
         <Flex align='center' justify="center" style={{ height:"100%", width:"100%"}}>
-          <MenuComponent/>
+          {!localStorage.getItem("access_token")&&<MenuComponent/>}
+          {localStorage.getItem("access_token")&&<MenuApiComponent/>}
         </Flex>
       </Header>
 
@@ -67,6 +64,9 @@ let App = () => {
           }></Route>
           <Route path="/registration" element={
             <Registration openNotification={openNotification} />
+          }></Route>
+            <Route path="/createMeeting" element={
+            <CreateMeeting openNotification={openNotification} />
           }></Route>
         </Routes>
       </Content>

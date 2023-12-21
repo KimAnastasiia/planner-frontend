@@ -15,18 +15,19 @@ let CreateMeeting = () => {
         descriptions: '',
         location: '',
         time: '',
-        date: '',
-        videoConference: false
+        date: ''
     });
 
 
-    
+
     let CreateNewMeeting = async () => {
-        console.log( JSON.stringify(formData))
-        
-        let response = await fetch("http://localhost:3001/meetings?access_token="+ localStorage.getItem("apiKey"), {
+
+        let response = await fetch("http://localhost:3001/meetings?access_token=" + localStorage.getItem("access_token"), {
 
             method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(formData)
         })
 
@@ -58,6 +59,11 @@ let CreateMeeting = () => {
     };
     const onPanelChange = (value, mode) => {
         console.log(value.format('YYYY-MM-DD'), mode);//2025-05-01 month
+        setFormData({
+            ...formData,
+            date: value.format('YYYY-MM-DD')
+        });
+       
     };
     const wrapperStyle = {
         width: 300,
@@ -65,14 +71,14 @@ let CreateMeeting = () => {
         borderRadius: token.borderRadiusLG,
     };
     const handleInputChange = (e, name) => {
-   
-        if(name=="time"){
+
+        if (name == "time") {
             setFormData({
                 ...formData,
-                [name]: e[0].$H+":"+e[0].$m+"-"+e[1].$H+":"+e[1].$m
+                [name]: e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
             });
 
-        }else{
+        } else {
             setFormData({
                 ...formData,
                 [name]: e.currentTarget.value
@@ -88,19 +94,20 @@ let CreateMeeting = () => {
                     <MyFormItemGroup prefix={['user']}>
                         <MyFormItemGroup prefix={['name']}>
                             <MyFormItem name="Title" label="Title">
-                                <Input onChange={(e)=>{handleInputChange(e, "title")}}/>
+                                <Input onChange={(e) => { handleInputChange(e, "title") }} />
                             </MyFormItem>
+
                             <MyFormItem name="Description" label="Description (optional)">
-                                <Input onChange={(e)=>{handleInputChange(e, "descriptions")}}/>
+                                <Input onChange={(e) => { handleInputChange(e, "descriptions") }} />
                             </MyFormItem>
                         </MyFormItemGroup>
 
                         <MyFormItem name="Location" label="Location (optional)">
-                            <Input onChange={(e)=>{handleInputChange(e, "location")}}/>
+                            <Input onChange={(e) => { handleInputChange(e, "location") }} />
                         </MyFormItem>
 
                         <MyFormItem name="VideoConferencing" label="Video conferencing">
-                            <Switch  onChange={onChange} />
+                            <Switch onChange={onChange} />
                         </MyFormItem>
 
                     </MyFormItemGroup>
@@ -110,7 +117,7 @@ let CreateMeeting = () => {
                     <MyFormItemGroup prefix={['user']}>
                         <MyFormItemGroup prefix={['name']}>
                             <MyFormItem name="Duration" label="Duration">
-                                <TimePicker.RangePicker format="HH:mm"  onChange={(e)=>{handleInputChange(e, "time")}} />
+                                <TimePicker.RangePicker format="HH:mm" onChange={(e) => { handleInputChange(e, "time") }} />
                             </MyFormItem>
                             <div style={wrapperStyle}>
                                 <Calendar
@@ -196,8 +203,8 @@ let CreateMeeting = () => {
                                 />
                             </div>
                         </MyFormItemGroup>
-                        <Flex align='center' justify='center' style={{width:"100%"}}>
-                            <Button type="primary" htmlType="submit" style={{width:"50%", marginTop:"30px"}}>
+                        <Flex align='center' justify='center' style={{ width: "100%" }}>
+                            <Button type="primary" htmlType="submit" style={{ width: "50%", marginTop: "30px" }}>
                                 Submit
                             </Button>
                         </Flex>
