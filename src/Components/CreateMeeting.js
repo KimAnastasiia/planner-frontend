@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Form, Flex, Input, Switch, TimePicker, Calendar, Col, Radio, Row, Select, Typography, theme } from 'antd';
+import { Button, message, Flex, Input, Switch, TimePicker, Calendar, Col, Radio, Row, Select, Typography, theme } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import "../App.css"
 
@@ -18,7 +18,7 @@ let CreateMeeting = () => {
         date: '',
         onlineConference: false
     });
-
+    const [messageApi, contextHolder] = message.useMessage();
     let CreateNewMeeting = async () => {
 
         let response = await fetch("http://localhost:3001/meetings?access_token=" + localStorage.getItem("access_token"), {
@@ -29,6 +29,21 @@ let CreateMeeting = () => {
             },
             body: JSON.stringify(formData)
         })
+        if(response.ok){
+            messageApi.open({
+                type: 'success',
+                content: 'Meeting created',
+              });
+              setFormData({
+                ...formData,
+                title: '',
+                descriptions: '',
+                location: '',
+                time: '',
+                date: '',
+                onlineConference: false
+            });
+        }
 
         console.log(response)
     }
@@ -82,6 +97,7 @@ let CreateMeeting = () => {
     };
     return (
         <Flex justify='center' style={{ width: "100%", minHeight: "100vh" }}>
+            {contextHolder}
             <Flex vertical justify='center' align='center' style={{ width: "70%", minHeight: "100vh", backgroundColor: "white", padding: 50 }}>
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Create group poll</Title>
 
@@ -91,14 +107,14 @@ let CreateMeeting = () => {
                     <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
 
                     <Typography.Title level={5}>Description</Typography.Title>
-                    <Input onChange={(e) => { handleInputChange(e, "descriptions") }} />
+                    <Input value={formData.descriptions} onChange={(e) => { handleInputChange(e, "descriptions") }} />
 
                     <Typography.Title level={5}>Location</Typography.Title>
-                    <Input onChange={(e) => { handleInputChange(e, "location") }} />
+                    <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
 
                     <Flex style={{ marginTop: 20 }}>
                         <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
-                        <Switch style={{ width: "30px" }} onChange={onChange} />
+                        <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={onChange} />
                     </Flex>
 
                 </Flex>

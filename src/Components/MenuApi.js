@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button, Avatar, Flex, Typography, Popconfirm } from 'antd';
-import { CalendarOutlined, UserOutlined, DownOutlined , UpOutlined} from '@ant-design/icons';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Button, Avatar, Flex, Typography, Popover } from 'antd';
+import { CalendarOutlined, UserOutlined, DownOutlined, UpOutlined } from '@ant-design/icons';
 import "../App.css"
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 let MenuApiComponent = () => {
@@ -10,7 +10,40 @@ let MenuApiComponent = () => {
   let [open, setOpen] = useState(false);
   const text = 'Are you sure to delete this task?';
   const description = 'Delete the task';
-  
+  const [arrow, setArrow] = useState('Show');
+
+  const { Text, Link } = Typography;
+  const mergedArrow = useMemo(() => {
+    if (arrow === 'Hide') {
+      return false;
+    }
+    if (arrow === 'Show') {
+      return true;
+    }
+    return {
+      pointAtCenter: true,
+    };
+  }, [arrow]);
+  const content = (
+    <div style={{ width: 300, height: 170 }}>
+      <Flex align='center' style={{ height: "30%", width: "100%", borderBottom: "1px solid #D3DCE3" }}>
+        <div>
+          <Avatar size="large" style={{ margin: 20 }} icon={<UserOutlined />} />
+        </div>
+        <Flex vertical>
+
+          <Text level={4}>   {localStorage.getItem("name")}</Text>
+          <Text level={4}>   {localStorage.getItem("email")}</Text>
+        </Flex>
+      </Flex>
+      <Flex vertical style={{ height: "70%", marginTop: 20 }}>
+
+        <Button style={{ marginBottom: 20 }} block>Dashboard</Button>
+        <Button block>Account Settings</Button>
+
+      </Flex>
+    </div>
+  );
   let disconnect = async () => {
     localStorage.removeItem("access_token");
     navigate("/login")
@@ -24,25 +57,18 @@ let MenuApiComponent = () => {
       <Flex>
 
         <Button size={size} shape="round" type="text" style={{ marginLeft: 10 }}>
-          <Flex justify="space-between" align='center' style={{ width: 60,height:"100%"}}>
-            <Avatar icon={<UserOutlined />} />
-            <Popconfirm
-              placement="bottom"
-              title={text}
-              description={description}
-              okText="Yes"
-              cancelText="No"
-              className="myCustomPopconfirm"
-            >
-              {!open &&<DownOutlined onClick={()=>{setOpen(true)}}/>}
-              {open && <UpOutlined onClick={()=>{setOpen(false)}}/>}
-            </Popconfirm>
+          <Flex justify="space-between" align='center' style={{ width: 60, height: "100%" }}>
+            <Popover placement="bottom" content={content} arrow={mergedArrow}>
+              <Avatar style={{ marginRight: 10 }} icon={<UserOutlined />} />
+              {!open && <DownOutlined onClick={() => { setOpen(true) }} />}
+              {open && <UpOutlined onClick={() => { setOpen(false) }} />}
+            </Popover>
           </Flex>
         </Button>
-        <Button onClick={() => { navigate("/createDate") }} type="primary" shape="round" size={size} style={{ backgroundColor: "#9D7D6F", marginLeft: 10 }}>
+        <Button onClick={() => { navigate("/createMeeting") }} type="primary" shape="round" size={size} style={{ backgroundColor: "#9D7D6F", marginLeft: 10 }}>
           + Crear
         </Button>
-        <Button onClick={disconnect} type="dashed" shape="round" size={size} style={{marginLeft: 10 }}>
+        <Button onClick={disconnect} type="dashed" shape="round" size={size} style={{ marginLeft: 10 }}>
           Exit
         </Button>
       </Flex>

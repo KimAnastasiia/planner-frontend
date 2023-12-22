@@ -28,6 +28,8 @@ const Login = () => {
             let data = await response.json()
             console.log(data)
             localStorage.setItem('access_token', data.apiKey);
+            localStorage.setItem('email', data.email);
+            localStorage.setItem('name', data.name);
             navigate("/createMeeting")
         }
      
