@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Button, message, Flex, Input, Switch, TimePicker, Calendar, Col, Radio, Row, Select, Typography, theme } from 'antd';
-import { CalendarOutlined } from '@ant-design/icons';
+import React, { useRef, useState } from 'react';
+import { Button, message, Flex, Input, Switch, Form, Calendar, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
 
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
@@ -14,12 +14,17 @@ let CreateMeeting = () => {
         title: '',
         descriptions: '',
         location: '',
-        time: '',
-        date: '',
         onlineConference: false
     });
+    let indexTime=useRef(0)
+    const [selectedDate, setSelectedDate] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
+
     let CreateNewMeeting = async () => {
+        let objToSent ={
+            ...formData,
+            dates:[...selectedDate]
+        }
 
         let response = await fetch("http://localhost:3001/meetings?access_token=" + localStorage.getItem("access_token"), {
 
@@ -27,27 +32,13 @@ let CreateMeeting = () => {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(formData)
+            body: JSON.stringify(objToSent)
         })
-        if(response.ok){
-            messageApi.open({
-                type: 'success',
-                content: 'Meeting created',
-              });
-              setFormData({
-                ...formData,
-                title: '',
-                descriptions: '',
-                location: '',
-                time: '',
-                date: '',
-                onlineConference: false
-            });
+        if (response.ok) {
+            //addDaysOfMeeting()
         }
 
-        console.log(response)
     }
-
     const onChange = (checked) => {
         setFormData({
             ...formData,
@@ -57,21 +48,21 @@ let CreateMeeting = () => {
     };
     const onPanelChange = (value, mode) => {
         console.log(value.format('YYYY-MM-DD'), mode);//2025-05-01 month
-        setFormData({
-            ...formData,
-            date: value.format('YYYY-MM-DD')
-        });
+        //setSelectedDays([...selectedDays,value.format('YYYY-MM-DD'), mode])
 
     };
     const onSelectCalendar = (date, { source }) => {
         if (source === 'date') {
-            let dataNew = date.format('YYYY-MM-DD')
+            let dateNew = date.format('YYYY-MM-DD')
             console.log('Panel Select:', source);
-            console.log(dataNew)
-            setFormData({
-                ...formData,
-                date: dataNew
-            });
+            console.log(dateNew)
+            //dataNew
+            let copyOfDay=[...selectedDate]
+            let currentDay= copyOfDay.find((d) => d.day == dateNew)
+            
+            if(!currentDay){
+                setSelectedDate([...selectedDate, { date: dateNew, times: [] }])
+            }
         }
     }
     const wrapperStyle = {
@@ -79,14 +70,14 @@ let CreateMeeting = () => {
         border: `1px solid ${token.colorBorderSecondary}`,
         borderRadius: token.borderRadiusLG,
     };
-    const handleInputChange = (e, name) => {
-
+    const handleInputChange = (e, name, day) => {
+        
         if (name == "time") {
-            setFormData({
-                ...formData,
-                [name]: e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
-            });
-
+            indexTime.current= indexTime.current+1
+            let copyOfDay=[...selectedDate]
+            let currentDay= copyOfDay.find((d) => d.day == day)
+            currentDay.times.push({time:e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m, timeId:indexTime.current})
+            setSelectedDate(copyOfDay)
         } else {
             setFormData({
                 ...formData,
@@ -95,6 +86,24 @@ let CreateMeeting = () => {
         }
 
     };
+    const deleteTimeOfDate=(day, timeIndex)=>{
+
+        let copyOfDays=[...selectedDate]
+
+        let currentDays = copyOfDays.map((d) => {
+            if (d.day === day) {
+                d.times = d.times.filter((time) => time.timeId !== timeIndex);
+            }
+            return d;
+        });
+
+        setSelectedDate(currentDays)
+    }
+    const deleteDay=(day)=>{
+        let copyOfDays=[...selectedDate]
+        let currentDays= copyOfDays.filter((d) => d.day !== day)
+        setSelectedDate(currentDays)
+    }
     return (
         <Flex justify='center' style={{ width: "100%", minHeight: "100vh" }}>
             {contextHolder}
@@ -121,12 +130,12 @@ let CreateMeeting = () => {
 
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>
 
-                <Flex vertical style={{ width: "400px" }}>
-                    <Typography.Title level={5}>Time of meeting</Typography.Title>
-                    <TimePicker.RangePicker style={{ marginBottom: 20 }} format="HH:mm" onChange={(e) => { handleInputChange(e, "time") }} />
+                <Flex justify="space-around" style={{ width: "100%" }}>
 
-                    <Typography.Title level={5}>Date</Typography.Title>
+
+
                     <div style={wrapperStyle}>
+                        <Typography.Title style={{ margin: 10 }} level={4}>Date</Typography.Title>
                         <Calendar
                             fullscreen={false}
                             headerRender={({ value, type, onChange, onTypeChange }) => {
@@ -209,6 +218,33 @@ let CreateMeeting = () => {
                             onPanelChange={onPanelChange}
                             onSelect={onSelectCalendar}
                         />
+                    </div>
+                    <div>
+                        {selectedDate.map((date) => 
+
+                        <Flex align="center" style={{border:"1px solid #D3DCE3", padding:20, marginBottom:20}}>
+                            <Flex>
+                                <Typography.Title level={5}>{date.day}</Typography.Title>
+                            </Flex>
+                            <Flex vertical align="center">
+
+                                {date.times.map((timeObj) =>
+
+                                    <Flex style={{border:"1px solid #D3DCE3", padding:20, marginBottom:20}}>
+                                        <Typography.Title level={5}>{timeObj.time}</Typography.Title>
+                                        <Button onClick={()=>{deleteTimeOfDate(date.day, timeObj.timeId)}} style={{marginLeft:20}}><DeleteOutlined  /></Button>
+                                    </Flex>
+                                )}
+                                <Flex align='center'>
+                                    <Typography.Title level={5} style={{marginLeft:20}}>Choose time for this date</Typography.Title>
+                                    <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.day) }} format={"HH:mm"} style={{ margin: 20 }} />
+                                </Flex>
+                            </Flex>
+                            <div>
+                                <Button danger type="dashed" onClick={()=>{deleteDay(date.day)}}><DeleteOutlined /></Button>
+                            </div>
+                        </Flex>
+                        )}
                     </div>
                 </Flex>
 
