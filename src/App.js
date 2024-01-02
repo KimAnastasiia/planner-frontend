@@ -9,6 +9,7 @@ import Registration from "./Components/Registration";
 import MenuApiComponent from "./Components/MenuApi";
 import Login from "./Components/Login";
 import CreateMeeting from "./Components/CreateMeeting";
+import SelectionOfDates from "./Components/SelectionOfDates";
 
 let App = () => {
 
@@ -67,6 +68,9 @@ let App = () => {
           }></Route>
             <Route path="/createMeeting" element={
             <CreateMeeting openNotification={openNotification} />
+          }></Route>
+          <Route path="/participate/:id" element={
+            <SelectionOfDates openNotification={SelectionOfDates} />
           }></Route>
         </Routes>
       </Content>

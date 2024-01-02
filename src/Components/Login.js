@@ -46,13 +46,18 @@ const Login = () => {
         console.log('Failed:', errorInfo);
     };
     const checkUser = async (access_token) => {
-        localStorage.setItem('access_token', access_token);
 
-        let response = await fetch(backendUrl + "/users?access_token=" + access_token)
+
+        let response = await fetch("http://localhost:3001/users?access_token=" + access_token)
 
         
         if (response.ok) {
-            console.log("Logined")
+            let data = await response.json()
+            console.log(data)
+            localStorage.setItem('access_token', access_token);
+            localStorage.setItem('email', data[0].email);
+            localStorage.setItem('name', data[0].name);
+            navigate("/createMeeting")
         }
 
     }

@@ -4,6 +4,7 @@ import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
 
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
+import Commons from '../Utility/url';
 
 let CreateMeeting = () => {
 
@@ -35,7 +36,10 @@ let CreateMeeting = () => {
             body: JSON.stringify(objToSent)
         })
         if (response.ok) {
-            //addDaysOfMeeting()
+           let data = await response.json()
+           setSelectedDate([])
+           navigate("/participate/"+data.meetingId)
+           
         }
 
     }
@@ -75,7 +79,7 @@ let CreateMeeting = () => {
         if (name == "time") {
             indexTime.current= indexTime.current+1
             let copyOfDay=[...selectedDate]
-            let currentDay= copyOfDay.find((d) => d.day == day)
+            let currentDay= copyOfDay.find((d) => d.date == day)
             currentDay.times.push({time:e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m, timeId:indexTime.current})
             setSelectedDate(copyOfDay)
         } else {
@@ -224,7 +228,7 @@ let CreateMeeting = () => {
 
                         <Flex align="center" style={{border:"1px solid #D3DCE3", padding:20, marginBottom:20}}>
                             <Flex>
-                                <Typography.Title level={5}>{date.day}</Typography.Title>
+                                <Typography.Title level={5}>{date.date}</Typography.Title>
                             </Flex>
                             <Flex vertical align="center">
 
@@ -237,7 +241,7 @@ let CreateMeeting = () => {
                                 )}
                                 <Flex align='center'>
                                     <Typography.Title level={5} style={{marginLeft:20}}>Choose time for this date</Typography.Title>
-                                    <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.day) }} format={"HH:mm"} style={{ margin: 20 }} />
+                                    <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.date) }} format={"HH:mm"} style={{ margin: 20 }} />
                                 </Flex>
                             </Flex>
                             <div>
