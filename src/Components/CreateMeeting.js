@@ -62,7 +62,7 @@ let CreateMeeting = () => {
             console.log(dateNew)
             //dataNew
             let copyOfDay=[...selectedDate]
-            let currentDay= copyOfDay.find((d) => d.day == dateNew)
+            let currentDay= copyOfDay.find((d) => d.date == dateNew)
             
             if(!currentDay){
                 setSelectedDate([...selectedDate, { date: dateNew, times: [] }])
@@ -105,7 +105,7 @@ let CreateMeeting = () => {
     }
     const deleteDay=(day)=>{
         let copyOfDays=[...selectedDate]
-        let currentDays= copyOfDays.filter((d) => d.day !== day)
+        let currentDays= copyOfDays.filter((d) => d.date !== day)
         setSelectedDate(currentDays)
     }
     return (
@@ -245,7 +245,7 @@ let CreateMeeting = () => {
                                 </Flex>
                             </Flex>
                             <div>
-                                <Button danger type="dashed" onClick={()=>{deleteDay(date.day)}}><DeleteOutlined /></Button>
+                                <Button danger type="dashed" onClick={()=>{deleteDay(date.date)}}><DeleteOutlined />hg</Button>
                             </div>
                         </Flex>
                         )}

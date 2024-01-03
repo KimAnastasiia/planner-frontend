@@ -1,16 +1,17 @@
 import React from 'react';
-import { Button, Checkbox, Form, Input } from 'antd';
+import { Button, message, Form, Input } from 'antd';
 import { Flex, Radio } from 'antd';
 import { useGoogleLogin } from '@react-oauth/google';
 import { backendUrl } from '../Global';
 import { useEffect, useState } from "react";
-import { wait } from '@testing-library/user-event/dist/utils';
 import { useNavigate } from "react-router-dom";
+import Commons from '../Utility/url';
 const Login = () => {
 
     let [email, setEmail] = useState(false);
     let [password, setPassword] = useState(false);
     let navigate = useNavigate()
+    const [messageApi, contextHolder] = message.useMessage();
     let CreateAccount = async () => {
 
         let response = await fetch("http://localhost:3001/users/verification", {
@@ -20,19 +21,25 @@ const Login = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                password:password,
-                email:email
+                password: password,
+                email: email
             })
         })
-        if(response.ok){
+        if (response.ok) {
             let data = await response.json()
-            console.log(data)
-            localStorage.setItem('access_token', data.apiKey);
-            localStorage.setItem('email', data.email);
-            localStorage.setItem('name', data.name);
-            navigate("/createMeeting")
+   
+                localStorage.setItem('access_token', data.apiKey);
+                localStorage.setItem('email', data.email);
+                localStorage.setItem('name', data.name);
+                navigate("/createMeeting")
+         
+
         }
-     
+        else {
+            error()
+        }
+
+
     }
     const login = useGoogleLogin({
         onSuccess: tokenResponse => {
@@ -48,9 +55,9 @@ const Login = () => {
     const checkUser = async (access_token) => {
 
 
-        let response = await fetch("http://localhost:3001/users?access_token=" + access_token)
+        let response = await fetch(Commons.baseUrl + "/users?access_token=" + access_token)
 
-        
+
         if (response.ok) {
             let data = await response.json()
             console.log(data)
@@ -61,9 +68,15 @@ const Login = () => {
         }
 
     }
-
+    const error = () => {
+        messageApi.open({
+            type: 'error',
+            content: 'This is an error message',
+        });
+    };
     return (
         <Flex justify='center' align='center' style={{ height: "100vh", width: "100%" }}>
+            {contextHolder}
             <Flex justify='center' align='center' style={{ height: 600, width: 600, backgroundColor: "white", border: "1px solid #D3DCE3" }}>
 
 
@@ -95,9 +108,9 @@ const Login = () => {
                                 },
                             ]}
                         >
-                            <Input type="email" onChange={(e)=>{setEmail(e.target.value)}} />
+                            <Input type="email" onChange={(e) => { setEmail(e.target.value) }} />
                         </Form.Item>
-                        
+
                         <Form.Item
                             label="Password"
                             name="password"
@@ -108,7 +121,7 @@ const Login = () => {
                                 },
                             ]}
                         >
-                            <Input.Password onChange={(e)=>{setPassword(e.target.value)}} />
+                            <Input.Password onChange={(e) => { setPassword(e.target.value) }} />
                         </Form.Item>
 
                         <Form.Item
