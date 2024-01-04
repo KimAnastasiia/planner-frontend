@@ -5,34 +5,24 @@ import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
-let SelectionOfDates = () => {
+
+let VotesComponent = () => {
 
     const { Text } = Typography;
-    const { id } = useParams()
+    const { meetingId } = useParams()
     let [meetingData, setMeetingData] = useState()
-    let [name, setName] = useState("")
-    let [email, setEmail] = useState("")
     const { Title } = Typography;
     let [ids, setIds] = useState([6, 7])
     let [votes, setVotes] = useState([])
-    let [disableButton, setDisableButton] = useState(true)
     let [columnsArray, setColumnsArray] = useState([])
 
     useEffect(() => {
         getMeetingInfo()
     }, [])
 
-    useEffect(() => {
-        if (name && email && name != "" && email != "") {
-            setDisableButton(false)
-        } else {
-            setDisableButton(true)
-        }
-    }, [email, name])
-
     let getVotes = async (meetingData) => {
 
-        let response = await fetch(Commons.baseUrl + "/participation?meeting=" + id)
+        let response = await fetch(Commons.baseUrl + "/participation?meeting=" + meetingId)
         if (response.ok) {
             let data = await response.json()
             const result = data.reduce((acc, item) => {
@@ -52,14 +42,6 @@ let SelectionOfDates = () => {
                 })
             })
 
-            let objetPutYourChoose = {
-                name: "You"
-            }
-            console.log(meetingData)
-            meetingData.dates.forEach((d) => {
-                d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
-            })
-            newAr.unshift(objetPutYourChoose)
             setVotes(newAr)
 
         }
@@ -68,37 +50,13 @@ let SelectionOfDates = () => {
     }
 
     let getMeetingInfo = async () => {
-        let response = await fetch(Commons.baseUrl + "/meetings?meetingId=" + id)
+        let response = await fetch(Commons.baseUrl + "/meetings?meetingId=" + meetingId)
         if (response.ok) {
             let data = await response.json()
             console.log(data)
             setMeetingData(data[0])
             createColumns(data[0])
             getVotes(data[0])
-        }
-
-    }
-
-    let addParticipation = async () => {
-
-        let arrayOfTimes = [
-            ...ids]
-
-        let response = await fetch(Commons.baseUrl + "/participation", {
-
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                userEmail: email,
-                name: name,
-                meeting: meetingData.id,
-                timesIds: arrayOfTimes
-            })
-        })
-        if (response.ok) {
-            let data = await response.json()
         }
 
     }
@@ -139,7 +97,7 @@ let SelectionOfDates = () => {
 
     let createColumns = (currentMeeting) => {
 
-        currentMeeting?.dates.map((d) => {
+        currentMeeting?.dates?.map((d) => {
 
             return d.times.map((t) => {
 
@@ -184,10 +142,6 @@ let SelectionOfDates = () => {
 
         return (
             <div style={{ width: "100%" }}>
-                <Flex align='center' justify='center' style={{ width: "100%", marginBottom: "20px" }}>
-                    <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "50%" }}>Save</Button>
-                </Flex>
-
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
@@ -199,37 +153,25 @@ let SelectionOfDates = () => {
     }
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
-            <Flex style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
-                <Flex align='center' vertical style={{ width: "400px", borderRight: "1px solid #D3DCE3", padding: 30 }}>
+            <Flex vertical style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
+                <Flex  style={{ borderBottom: "1px solid #D3DCE3",  height:"40%"}}>
 
-                    <Flex style={{ borderBottom: "1px solid #D3DCE3" }} align='center'>
-                        <Avatar size="large" icon={<UserOutlined />} style={{ marginRight: 20 }} />
-                        <Flex align='center' vertical>
-                            <Title level={5}>{meetingData?.userEmail}</Title>
-                            <Text>meeting organizer</Text>
-                        </Flex>
+                    <Flex justify="space-between" vertical style={{width: "70%", padding: 30 }}>
+                        
+                        <Title level={2}>{meetingData?.title}</Title>
+                        <Text style={{ fontWeight: 'bold' }}><Avatar size="small" style={{ marginRight: 10 }}icon={<UserOutlined />} />You are the organizer of the group event.</Text>
+                        <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
+                        <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
+                        <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                        <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
                     </Flex>
-
-                    <Flex align='center' style={{ width: "100%", height: "100%" }} vertical>
-
-
-
-                        <Flex vertical align="flex-start" justify="space-around" style={{ width: "100%", height: "30%" }}>
-                            <Title level={5}>{meetingData?.title}</Title>
-                            <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
-                            <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
-                            <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                            <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
-                        </Flex>
-
+                    <Flex align='center' justify='center'>
+                        <Button >Preview</Button>
+                        <Button style={{margin:20}}>Edit</Button>
+                        <Button type='primary'>Share invite</Button>
                     </Flex>
                 </Flex>
-
-                <Flex align='center' vertical style={{ width: "600px", padding: 20 }}>
-                    <Title level={2}>Select your preferred hours</Title>
-                    <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
-                    <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
-                    <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
+                <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
                     {renderDates()}
                 </Flex>
             </Flex>
@@ -239,4 +181,4 @@ let SelectionOfDates = () => {
 
 }
 
-export default SelectionOfDates
+export default VotesComponent

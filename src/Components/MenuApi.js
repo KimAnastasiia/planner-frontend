@@ -38,7 +38,7 @@ let MenuApiComponent = () => {
       </Flex>
       <Flex vertical style={{ height: "70%", marginTop: 20 }}>
 
-        <Button style={{ marginBottom: 20 }} block>Dashboard</Button>
+        <Button onClick={()=>{navigate("/dashboard")}} style={{ marginBottom: 20 }} block>Dashboard</Button>
         <Button block>Account Settings</Button>
 
       </Flex>

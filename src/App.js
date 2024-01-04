@@ -10,6 +10,8 @@ import MenuApiComponent from "./Components/MenuApi";
 import Login from "./Components/Login";
 import CreateMeeting from "./Components/CreateMeeting";
 import SelectionOfDates from "./Components/SelectionOfDates";
+import DashboarComponent from "./Components/Dashboard";
+import VotesComponent from "./Components/Votes";
 
 let App = () => {
 
@@ -64,13 +66,19 @@ let App = () => {
             <Login openNotification={openNotification} />
           }></Route>
           <Route path="/registration" element={
-            <Registration openNotification={openNotification} />
+            <Registration  />
           }></Route>
             <Route path="/createMeeting" element={
-            <CreateMeeting openNotification={openNotification} />
+            <CreateMeeting />
           }></Route>
           <Route path="/participate/:id" element={
-            <SelectionOfDates openNotification={SelectionOfDates} />
+            <SelectionOfDates  />
+          }></Route>
+          <Route path="/dashboard" element={
+            <DashboarComponent />
+          }></Route>
+          <Route path="/votes/:meetingId" element={
+            <VotesComponent />
           }></Route>
         </Routes>
       </Content>

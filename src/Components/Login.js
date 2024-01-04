@@ -12,9 +12,10 @@ const Login = () => {
     let [password, setPassword] = useState(false);
     let navigate = useNavigate()
     const [messageApi, contextHolder] = message.useMessage();
-    let CreateAccount = async () => {
 
-        let response = await fetch("http://localhost:3001/users/verification", {
+    let verificateUser = async () => {
+
+        let response = await fetch(backendUrl+"/users/verification", {
 
             method: "POST",
             headers: {
@@ -41,7 +42,7 @@ const Login = () => {
 
 
     }
-    const login = useGoogleLogin({
+    const loginGoogle = useGoogleLogin({
         onSuccess: tokenResponse => {
             checkUser(tokenResponse.access_token)
         }
@@ -128,7 +129,7 @@ const Login = () => {
                             style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
                         >
 
-                            <Button onClick={CreateAccount} shape="round" style={{ backgroundColor: "#933D55", width: "300px", height: 50, fontSize: 17, }} type="primary" htmlType="submit">
+                            <Button onClick={verificateUser} shape="round" style={{ backgroundColor: "#933D55", width: "300px", height: 50, fontSize: 17, }} type="primary" htmlType="submit">
                                 Login
                             </Button>
 
@@ -138,7 +139,7 @@ const Login = () => {
                         <Button
                             style={{ width: "300px", height: 50, backgroundColor: "white", color: "black", fontSize: 17, border: "1px solid #933D55" }}
                             shape="round"
-                            onClick={() => login()}
+                            onClick={() => loginGoogle()}
 
                         >
                             <img
