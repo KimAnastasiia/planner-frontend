@@ -1,12 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button, message, Flex, Input, Switch, Form, Calendar, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
-
+import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import Commons from '../Utility/url';
 
-let CreateMeeting = () => {
+let EditMeeting = () => {
 
     const { Title } = Typography;
     let navigate = useNavigate()
@@ -20,25 +20,51 @@ let CreateMeeting = () => {
     let indexTime=useRef(0)
     const [selectedDate, setSelectedDate] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
+    const { meetingId } = useParams()
 
-    let CreateNewMeeting = async () => {
+    useEffect(() => {
+        getMeetingInfo()
+    }, [])
+
+    let deleteDateFromBK=async(dateId)=>{
+        let response = await fetch(Commons.baseUrl + `/dates/${dateId}?access_token=`+ localStorage.getItem("access_token"), {
+            method: 'DELETE'
+          })
+          if (response.ok) {
+          }
+    }
+
+    let getMeetingInfo = async () => {
+        let response = await fetch(Commons.baseUrl + "/meetings?meetingId=" + meetingId)
+        if (response.ok) {
+            let data = await response.json()
+            console.log(data)
+            setFormData(data[0])
+            let newAr =[]
+
+            data[0]?.dates?.map((d)=>
+                newAr.push(d)
+            )
+            console.log(newAr)
+            setSelectedDate(newAr)
+        }
+
+    }
+    let EditMeeting = async () => {
         let objToSent ={
             ...formData,
             dates:[...selectedDate]
         }
 
-        let response = await fetch("http://localhost:3001/meetings?access_token=" + localStorage.getItem("access_token"), {
+        let response = await fetch(Commons.baseUrl+`/meetings?access_token=`+ localStorage.getItem("access_token"), {
 
-            method: "POST",
+            method: "PUT",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(objToSent)
         })
         if (response.ok) {
-           let data = await response.json()
-           setSelectedDate([])
-           navigate("/participate/"+data.meetingId)
            
         }
 
@@ -73,6 +99,7 @@ let CreateMeeting = () => {
         width: 300,
         border: `1px solid ${token.colorBorderSecondary}`,
         borderRadius: token.borderRadiusLG,
+        height:"400px"
     };
     const handleInputChange = (e, name, day) => {
         
@@ -173,7 +200,7 @@ let CreateMeeting = () => {
                                 return (
                                     <div
                                         style={{
-                                            padding: 8,
+                                            padding: 8
                                         }}
                                     >
 
@@ -252,7 +279,7 @@ let CreateMeeting = () => {
                     </div>
                 </Flex>
 
-                <Button onClick={CreateNewMeeting} type="primary" style={{ width: "100%", marginTop: "30px" }}>
+                <Button onClick={EditMeeting} type="primary" style={{ width: "100%", marginTop: "30px" }}>
                     Submit
                 </Button>
             </Flex>
@@ -261,4 +288,4 @@ let CreateMeeting = () => {
     )
 };
 
-export default CreateMeeting;
+export default EditMeeting;

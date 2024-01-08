@@ -41,7 +41,7 @@ let DashboarComponent = () => {
                 {meetings.filter((meeting)=>{
                 return meeting.title.includes(search)
             }).map((m) =>
-                    <Flex  align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20 }}>
+                    <Flex onClick={()=>{navigate("/votes/"+m.id)}} align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20 }}>
                         <Flex style={{ width: "10%" }}>
                             <Avatar icon={<UserOutlined />} />
                         </Flex>
@@ -55,7 +55,7 @@ let DashboarComponent = () => {
 
                         </Flex>
                         <Flex style={{ width: "20%" }}>
-                            <Button onClick={()=>{navigate("/votes/"+m.id)}} type="dashed" danger>delete</Button>
+                            <Button type="dashed" danger>delete</Button>
                         </Flex>
 
 

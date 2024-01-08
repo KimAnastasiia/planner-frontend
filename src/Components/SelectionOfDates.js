@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Avatar, Flex, Typography, Pagination, Input, Checkbox, Table, Row, Select, theme } from 'antd';
+import { Button, Avatar, Flex, Typography, message, Input, Checkbox, Table, Row, Select, theme } from 'antd';
 import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
@@ -13,11 +13,11 @@ let SelectionOfDates = () => {
     let [name, setName] = useState("")
     let [email, setEmail] = useState("")
     const { Title } = Typography;
-    let [ids, setIds] = useState([6, 7])
+    let [ids, setIds] = useState([])
     let [votes, setVotes] = useState([])
     let [disableButton, setDisableButton] = useState(true)
     let [columnsArray, setColumnsArray] = useState([])
-
+    const [messageApi, contextHolder] = message.useMessage();
     useEffect(() => {
         getMeetingInfo()
     }, [])
@@ -56,7 +56,7 @@ let SelectionOfDates = () => {
                 name: "You"
             }
             console.log(meetingData)
-            meetingData.dates.forEach((d) => {
+            meetingData?.dates?.forEach((d) => {
                 d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
             })
             newAr.unshift(objetPutYourChoose)
@@ -99,34 +99,44 @@ let SelectionOfDates = () => {
         })
         if (response.ok) {
             let data = await response.json()
+            
+            setIds([])
+            setName("")
+            setEmail("")
+
+            getVotes()
+            success()
         }
 
     }
-
+    const success = () => {
+        messageApi.open({
+          type: 'success',
+          content: 'This is a success message',
+        });
+      };
     let checkBoxChange = (e, timeId) => {
 
-        let copyOfDates = [...ids]
+        let copyOfTimesIds = [...ids]
         if (e.target.checked == true) {
 
 
-            let currentTime = copyOfDates.find((time) => time == timeId)
+            let currentTime = copyOfTimesIds.find((time) => time == timeId)
 
 
             if (!currentTime) {
-                copyOfDates = [...ids, timeId]
+                copyOfTimesIds = [...ids, timeId ]
 
             }
-            setIds(copyOfDates)
+            setIds(copyOfTimesIds)
         }
         if (e.target.checked == false) {
 
-            copyOfDates = copyOfDates.filter((time) => time !== timeId)
+            copyOfTimesIds = copyOfTimesIds.filter((time) => time !== timeId)
 
-            setIds(copyOfDates)
+            setIds(copyOfTimesIds)
         }
-        console.log(copyOfDates)
-        console.log(ids)
-
+        console.log(copyOfTimesIds)
     }
 
     let columns = []
@@ -139,7 +149,7 @@ let SelectionOfDates = () => {
 
     let createColumns = (currentMeeting) => {
 
-        currentMeeting?.dates.map((d) => {
+        currentMeeting?.dates?.map((d) => {
 
             return d.times.map((t) => {
 
@@ -184,21 +194,19 @@ let SelectionOfDates = () => {
 
         return (
             <div style={{ width: "100%" }}>
-                <Flex align='center' justify='center' style={{ width: "100%", marginBottom: "20px" }}>
-                    <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "50%" }}>Save</Button>
-                </Flex>
-
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
                     scroll={{ x: 900, y: 170 }}
                     bordered
                 />
+                <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>
             </div>
         )
     }
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
+              {contextHolder}
             <Flex style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
                 <Flex align='center' vertical style={{ width: "400px", borderRight: "1px solid #D3DCE3", padding: 30 }}>
 

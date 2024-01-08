@@ -12,6 +12,7 @@ import CreateMeeting from "./Components/CreateMeeting";
 import SelectionOfDates from "./Components/SelectionOfDates";
 import DashboarComponent from "./Components/Dashboard";
 import VotesComponent from "./Components/Votes";
+import EditMeeting from "./Components/EditMeeting";
 
 let App = () => {
 
@@ -79,6 +80,9 @@ let App = () => {
           }></Route>
           <Route path="/votes/:meetingId" element={
             <VotesComponent />
+          }></Route>
+          <Route path="/edit/meeting/:meetingId" element={
+            <EditMeeting />
           }></Route>
         </Routes>
       </Content>

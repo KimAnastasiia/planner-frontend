@@ -1,11 +1,11 @@
 /* eslint-disable no-undef */
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Avatar, Flex, Typography, Pagination, Input, Checkbox, Table, Row, Select, theme } from 'antd';
 import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
-
+import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 let VotesComponent = () => {
 
     const { Text } = Typography;
@@ -15,12 +15,12 @@ let VotesComponent = () => {
     let [ids, setIds] = useState([6, 7])
     let [votes, setVotes] = useState([])
     let [columnsArray, setColumnsArray] = useState([])
-
+    let navigate = useNavigate()
     useEffect(() => {
         getMeetingInfo()
     }, [])
 
-    let getVotes = async (meetingData) => {
+    let getVotes = async () => {
 
         let response = await fetch(Commons.baseUrl + "/participation?meeting=" + meetingId)
         if (response.ok) {
@@ -151,6 +151,14 @@ let VotesComponent = () => {
             </div>
         )
     }
+    let shareLink=()=>{
+        navigator.share({
+            title: 'Shared Link',
+            text: 'Check out this link!',
+            url:"/participate/"+meetingId
+          })
+    }
+
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
             <Flex vertical style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
@@ -167,8 +175,8 @@ let VotesComponent = () => {
                     </Flex>
                     <Flex align='center' justify='center'>
                         <Button >Preview</Button>
-                        <Button style={{margin:20}}>Edit</Button>
-                        <Button type='primary'>Share invite</Button>
+                        <Button style={{margin:20}} onClick={()=>{navigate("/edit/meeting/"+meetingData?.id)}}>Edit</Button>
+                        <Button onClick={()=>{shareLink()}} type='primary'>Share invite</Button>
                     </Flex>
                 </Flex>
                 <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
