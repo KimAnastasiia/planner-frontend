@@ -17,14 +17,14 @@ let CreateMeeting = () => {
         location: '',
         onlineConference: false
     });
-    let indexTime=useRef(0)
+    let indexTime = useRef(0)
     const [selectedDate, setSelectedDate] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
 
     let CreateNewMeeting = async () => {
-        let objToSent ={
+        let objToSent = {
             ...formData,
-            dates:[...selectedDate]
+            dates: [...selectedDate]
         }
 
         let response = await fetch("http://localhost:3001/meetings?access_token=" + localStorage.getItem("access_token"), {
@@ -36,10 +36,10 @@ let CreateMeeting = () => {
             body: JSON.stringify(objToSent)
         })
         if (response.ok) {
-           let data = await response.json()
-           setSelectedDate([])
-           navigate("/participate/"+data.meetingId)
-           
+            let data = await response.json()
+            setSelectedDate([])
+            navigate("/votes/" + data.meetingId)
+
         }
 
     }
@@ -61,10 +61,10 @@ let CreateMeeting = () => {
             console.log('Panel Select:', source);
             console.log(dateNew)
             //dataNew
-            let copyOfDay=[...selectedDate]
-            let currentDay= copyOfDay.find((d) => d.date == dateNew)
-            
-            if(!currentDay){
+            let copyOfDay = [...selectedDate]
+            let currentDay = copyOfDay.find((d) => d.date == dateNew)
+
+            if (!currentDay) {
                 setSelectedDate([...selectedDate, { date: dateNew, times: [] }])
             }
         }
@@ -75,13 +75,17 @@ let CreateMeeting = () => {
         borderRadius: token.borderRadiusLG,
     };
     const handleInputChange = (e, name, day) => {
-        
+      
         if (name == "time") {
-            indexTime.current= indexTime.current+1
-            let copyOfDay=[...selectedDate]
-            let currentDay= copyOfDay.find((d) => d.date == day)
-            currentDay.times.push({time:e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m, timeId:indexTime.current})
-            setSelectedDate(copyOfDay)
+            let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
+            indexTime.current = indexTime.current + 1
+            let copyOfDay = [...selectedDate]
+            let currentDay = copyOfDay.find((d) => d.date == day)
+            let exist = currentDay.times.find((t) => t.time == curTime)
+            if (!exist) {
+                currentDay.times.push({ time: curTime, timeId: indexTime.current })
+                setSelectedDate(copyOfDay)
+            }
         } else {
             setFormData({
                 ...formData,
@@ -90,9 +94,9 @@ let CreateMeeting = () => {
         }
 
     };
-    const deleteTimeOfDate=(day, timeIndex)=>{
+    const deleteTimeOfDate = (day, timeIndex) => {
 
-        let copyOfDays=[...selectedDate]
+        let copyOfDays = [...selectedDate]
 
         let currentDays = copyOfDays.map((d) => {
             if (d.day === day) {
@@ -103,9 +107,9 @@ let CreateMeeting = () => {
 
         setSelectedDate(currentDays)
     }
-    const deleteDay=(day)=>{
-        let copyOfDays=[...selectedDate]
-        let currentDays= copyOfDays.filter((d) => d.date !== day)
+    const deleteDay = (day) => {
+        let copyOfDays = [...selectedDate]
+        let currentDays = copyOfDays.filter((d) => d.date !== day)
         setSelectedDate(currentDays)
     }
     return (
@@ -224,30 +228,30 @@ let CreateMeeting = () => {
                         />
                     </div>
                     <div>
-                        {selectedDate.map((date) => 
+                        {selectedDate.map((date) =>
 
-                        <Flex align="center" style={{border:"1px solid #D3DCE3", padding:20, marginBottom:20}}>
-                            <Flex>
-                                <Typography.Title level={5}>{date.date}</Typography.Title>
-                            </Flex>
-                            <Flex vertical align="center">
-
-                                {date.times.map((timeObj) =>
-
-                                    <Flex style={{border:"1px solid #D3DCE3", padding:20, marginBottom:20}}>
-                                        <Typography.Title level={5}>{timeObj.time}</Typography.Title>
-                                        <Button onClick={()=>{deleteTimeOfDate(date.day, timeObj.timeId)}} style={{marginLeft:20}}><DeleteOutlined  /></Button>
-                                    </Flex>
-                                )}
-                                <Flex align='center'>
-                                    <Typography.Title level={5} style={{marginLeft:20}}>Choose time for this date</Typography.Title>
-                                    <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.date) }} format={"HH:mm"} style={{ margin: 20 }} />
+                            <Flex align="center" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
+                                <Flex>
+                                    <Typography.Title level={5}>{date.date}</Typography.Title>
                                 </Flex>
+                                <Flex vertical align="center">
+
+                                    {date.times.map((timeObj) =>
+
+                                        <Flex style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
+                                            <Typography.Title level={5}>{timeObj.time}</Typography.Title>
+                                            <Button onClick={() => { deleteTimeOfDate(date.day, timeObj.timeId) }} style={{ marginLeft: 20 }}><DeleteOutlined /></Button>
+                                        </Flex>
+                                    )}
+                                    <Flex align='center'>
+                                        <Typography.Title level={5} style={{ marginLeft: 20 }}>Choose time for this date</Typography.Title>
+                                        <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.date) }} format={"HH:mm"} style={{ margin: 20 }} />
+                                    </Flex>
+                                </Flex>
+                                <div>
+                                    <Button danger type="dashed" onClick={() => { deleteDay(date.date) }}><DeleteOutlined /></Button>
+                                </div>
                             </Flex>
-                            <div>
-                                <Button danger type="dashed" onClick={()=>{deleteDay(date.date)}}><DeleteOutlined /></Button>
-                            </div>
-                        </Flex>
                         )}
                     </div>
                 </Flex>

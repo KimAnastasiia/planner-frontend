@@ -112,43 +112,39 @@ let SelectionOfDates = () => {
     const success = () => {
         messageApi.open({
           type: 'success',
-          content: 'This is a success message',
+          content: 'You have successfully selected the appropriate dates',
         });
       };
     let checkBoxChange = (e, timeId) => {
 
-        let copyOfTimesIds = [...ids]
-        if (e.target.checked == true) {
-
-
-            let currentTime = copyOfTimesIds.find((time) => time == timeId)
-
-
-            if (!currentTime) {
-                copyOfTimesIds = [...ids, timeId ]
-
+        setIds((prevIds) => {
+            let copyOfTimesIds = [...prevIds];
+    
+            if (e.target.checked) {
+                let currentTime = copyOfTimesIds.find((time) => time === timeId);
+    
+                if (!currentTime) {
+                    copyOfTimesIds = [...prevIds, timeId];
+                }
+            } else {
+                copyOfTimesIds = copyOfTimesIds.filter((time) => time !== timeId);
             }
-            setIds(copyOfTimesIds)
-        }
-        if (e.target.checked == false) {
-
-            copyOfTimesIds = copyOfTimesIds.filter((time) => time !== timeId)
-
-            setIds(copyOfTimesIds)
-        }
-        console.log(copyOfTimesIds)
+    
+            console.log(copyOfTimesIds); // This will log the updated array
+    
+            return copyOfTimesIds;
+        });
     }
-
-    let columns = []
-
-    columns.push({
-        title: '',
-        dataIndex: 'name',
-        key: 'name',
-    })
 
     let createColumns = (currentMeeting) => {
 
+        let columns=[]
+        columns.push({
+            title: '',
+            dataIndex: 'name',
+            key: 'name',
+        })
+    
         currentMeeting?.dates?.map((d) => {
 
             return d.times.map((t) => {
@@ -163,7 +159,7 @@ let SelectionOfDates = () => {
 
 
 
-
+             
                 columns.push({
                     title:
                         <Flex key={t.time} align='center' justify='center' vertical style={{ width: "100%" }}  >

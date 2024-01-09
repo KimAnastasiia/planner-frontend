@@ -122,8 +122,8 @@ let EditMeeting = () => {
         let copyOfDays=[...selectedDate]
 
         let currentDays = copyOfDays.map((d) => {
-            if (d.day === day) {
-                d.times = d.times.filter((time) => time.timeId !== timeIndex);
+            if (d.date === day) {
+                d.times = d.times.filter((time) => time.id !== timeIndex);
             }
             return d;
         });
@@ -263,7 +263,7 @@ let EditMeeting = () => {
 
                                     <Flex style={{border:"1px solid #D3DCE3", padding:20, marginBottom:20}}>
                                         <Typography.Title level={5}>{timeObj.time}</Typography.Title>
-                                        <Button onClick={()=>{deleteTimeOfDate(date.day, timeObj.timeId)}} style={{marginLeft:20}}><DeleteOutlined  /></Button>
+                                        <Button onClick={()=>{deleteTimeOfDate(date.date, timeObj.id)}} style={{marginLeft:20}}><DeleteOutlined  />t</Button>
                                     </Flex>
                                 )}
                                 <Flex align='center'>

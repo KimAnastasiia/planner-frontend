@@ -87,15 +87,15 @@ let VotesComponent = () => {
 
     }
 
-    let columns = []
-
-    columns.push({
-        title: '',
-        dataIndex: 'name',
-        key: 'name',
-    })
-
     let createColumns = (currentMeeting) => {
+
+        let columns = []
+
+        columns.push({
+            title: '',
+            dataIndex: 'name',
+            key: 'name',
+        })
 
         currentMeeting?.dates?.map((d) => {
 
@@ -151,23 +151,23 @@ let VotesComponent = () => {
             </div>
         )
     }
-    let shareLink=()=>{
+    let shareLink = () => {
         navigator.share({
             title: 'Shared Link',
             text: 'Check out this link!',
-            url:"/participate/"+meetingId
-          })
+            url: "/participate/" + meetingId
+        })
     }
 
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
             <Flex vertical style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
-                <Flex  style={{ borderBottom: "1px solid #D3DCE3",  height:"40%"}}>
+                <Flex style={{ borderBottom: "1px solid #D3DCE3", height: "40%" }}>
 
-                    <Flex justify="space-between" vertical style={{width: "70%", padding: 30 }}>
-                        
+                    <Flex justify="space-between" vertical style={{ width: "70%", padding: 30 }}>
+
                         <Title level={2}>{meetingData?.title}</Title>
-                        <Text style={{ fontWeight: 'bold' }}><Avatar size="small" style={{ marginRight: 10 }}icon={<UserOutlined />} />You are the organizer of the group event.</Text>
+                        <Text style={{ fontWeight: 'bold' }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
                         <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
                         <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
                         <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
@@ -175,8 +175,8 @@ let VotesComponent = () => {
                     </Flex>
                     <Flex align='center' justify='center'>
                         <Button >Preview</Button>
-                        <Button style={{margin:20}} onClick={()=>{navigate("/edit/meeting/"+meetingData?.id)}}>Edit</Button>
-                        <Button onClick={()=>{shareLink()}} type='primary'>Share invite</Button>
+                        <Button style={{ margin: 20 }} onClick={() => { navigate("/edit/meeting/" + meetingData?.id) }}>Edit</Button>
+                        <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>
                     </Flex>
                 </Flex>
                 <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
