@@ -15,7 +15,7 @@ const Login = () => {
 
     let verificateUser = async () => {
 
-        let response = await fetch(backendUrl+"/users/verification", {
+        let response = await fetch(Commons.baseUrl+"/users/verification", {
 
             method: "POST",
             headers: {

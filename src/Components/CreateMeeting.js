@@ -38,7 +38,7 @@ let CreateMeeting = () => {
         if (response.ok) {
             let data = await response.json()
             setSelectedDate([])
-            navigate("/votes/" + data.meetingId)
+            navigate("/votes/" +data.token+"/"+data.meetingId)
 
         }
 

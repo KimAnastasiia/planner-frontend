@@ -78,7 +78,7 @@ let App = () => {
           <Route path="/dashboard" element={
             <DashboarComponent />
           }></Route>
-          <Route path="/votes/:meetingId" element={
+          <Route path="/votes/:token/:meetingId" element={
             <VotesComponent />
           }></Route>
           <Route path="/edit/meeting/:meetingId" element={
