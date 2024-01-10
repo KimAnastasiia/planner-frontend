@@ -72,7 +72,7 @@ const Login = () => {
     const error = () => {
         messageApi.open({
             type: 'error',
-            content: 'This is an error message',
+            content: 'This user does not exist',
         });
     };
     return (

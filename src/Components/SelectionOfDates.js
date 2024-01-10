@@ -32,7 +32,7 @@ let SelectionOfDates = () => {
 
     let getVotes = async (meetingData) => {
 
-        let response = await fetch(Commons.baseUrl + "/participation?meeting=" + id)
+        let response = await fetch(Commons.baseUrl + "/participation/" + id)
         if (response.ok) {
             let data = await response.json()
             const result = data.reduce((acc, item) => {
@@ -93,7 +93,7 @@ let SelectionOfDates = () => {
             body: JSON.stringify({
                 userEmail: email,
                 name: name,
-                meeting: meetingData.id,
+                meetingId: meetingData.id,
                 timesIds: arrayOfTimes
             })
         })
