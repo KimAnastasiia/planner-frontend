@@ -85,7 +85,7 @@ let SelectionOfDates = () => {
         let arrayOfTimes = [
             ...ids]
 
-        let response = await fetch(Commons.baseUrl + "/participation", {
+        let response = await fetch(Commons.baseUrl + "/participation-public", {
 
             method: "POST",
             headers: {
