@@ -156,7 +156,7 @@ let VotesComponent = () => {
         navigator.share({
             title: 'Shared Link',
             text: 'Check out this link!',
-            url: "/participate/" + meetingId
+            url: `/participate/${token}/${meetingId}`
         })
     }
 

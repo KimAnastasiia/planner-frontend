@@ -72,7 +72,7 @@ let App = () => {
             <Route path="/createMeeting" element={
             <CreateMeeting />
           }></Route>
-          <Route path="/participate/:id" element={
+          <Route path="/participate/:token/:id" element={
             <SelectionOfDates  />
           }></Route>
           <Route path="/dashboard" element={

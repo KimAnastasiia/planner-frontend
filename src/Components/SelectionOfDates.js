@@ -9,6 +9,7 @@ let SelectionOfDates = () => {
 
     const { Text } = Typography;
     const { id } = useParams()
+    const { token } = useParams()
     let [meetingData, setMeetingData] = useState()
     let [name, setName] = useState("")
     let [email, setEmail] = useState("")
@@ -68,7 +69,7 @@ let SelectionOfDates = () => {
     }
 
     let getMeetingInfo = async () => {
-        let response = await fetch(Commons.baseUrl + "/meetings?meetingId=" + id)
+        let response = await fetch(Commons.baseUrl + `/meetings-public?meetingId=${id}&token=${token}`)
         if (response.ok) {
             let data = await response.json()
             console.log(data)
