@@ -10,6 +10,7 @@ let VotesComponent = () => {
 
     const { Text } = Typography;
     const { meetingId } = useParams()
+    const { token } = useParams()
     let [meetingData, setMeetingData] = useState()
     const { Title } = Typography;
     let [ids, setIds] = useState([6, 7])
@@ -50,7 +51,7 @@ let VotesComponent = () => {
     }
 
     let getMeetingInfo = async () => {
-        let response = await fetch(Commons.baseUrl + "/meetings?meetingId=" + meetingId)
+        let response = await fetch(Commons.baseUrl + `/meetings?meetingId=${meetingId}&token=${token}&access_token=${localStorage.getItem("access_token")}`)
         if (response.ok) {
             let data = await response.json()
             console.log(data)
