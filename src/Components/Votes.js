@@ -176,7 +176,7 @@ let VotesComponent = () => {
                     </Flex>
                     <Flex align='center' justify='center'>
                         <Button >Preview</Button>
-                        <Button style={{ margin: 20 }} onClick={() => { navigate("/edit/meeting/" + meetingData?.id) }}>Edit</Button>
+                        <Button style={{ margin: 20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
                         <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>
                     </Flex>
                 </Flex>

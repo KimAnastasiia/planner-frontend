@@ -21,7 +21,7 @@ let EditMeeting = () => {
     const [selectedDate, setSelectedDate] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
     const { meetingId } = useParams()
-
+    const { meetingToken } = useParams()
     useEffect(() => {
         getMeetingInfo()
     }, [])
@@ -35,7 +35,7 @@ let EditMeeting = () => {
     }
 
     let getMeetingInfo = async () => {
-        let response = await fetch(Commons.baseUrl + "/meetings?meetingId=" + meetingId)
+        let response = await fetch(Commons.baseUrl +  `/meetings?meetingId=${meetingId}&token=${meetingToken}&access_token=${localStorage.getItem("access_token")}`)
         if (response.ok) {
             let data = await response.json()
             console.log(data)
