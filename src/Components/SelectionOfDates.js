@@ -32,7 +32,7 @@ let SelectionOfDates = () => {
 
     let getVotes = async (meetingData) => {
 
-        let response = await fetch(Commons.baseUrl + "/participation/" + id)
+        let response = await fetch(Commons.baseUrl + "/participation-public/" + id)
         if (response.ok) {
             let data = await response.json()
             const result = data.reduce((acc, item) => {
