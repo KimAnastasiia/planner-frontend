@@ -115,10 +115,10 @@ let CreateMeeting = () => {
     return (
         <Flex justify='center' style={{ width: "100%", minHeight: "100vh" }}>
             {contextHolder}
-            <Flex vertical justify='center' align='center' style={{ width: "70%", minHeight: "100vh", backgroundColor: "white", padding: 50 }}>
+            <Flex vertical justify='center' align='center' style={{ minHeight: "100vh", backgroundColor: "white", padding: 50 }}>
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Create group poll</Title>
 
-                <Flex vertical style={{ width: "400px" }}>
+                <Flex vertical >
 
                     <Typography.Title level={5}>Title</Typography.Title>
                     <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
