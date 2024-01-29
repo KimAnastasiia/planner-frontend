@@ -78,7 +78,7 @@ const Login = () => {
     return (
         <Flex justify='center' align='center' style={{ height: "100vh", width: "100%" }}>
             {contextHolder}
-            <Flex justify='center' align='center' style={{ height: 600, width: 600, backgroundColor: "white", border: "1px solid #D3DCE3" }}>
+            <Flex justify='center' align='center'  style={{ height: 600, width: 600, backgroundColor: "white", border: "1px solid #D3DCE3", padding:20, borderRadius:20 }}>
 
 
                 <Flex align="center" justify='center' vertical style={{ width: "100%", height: "60%", }}>

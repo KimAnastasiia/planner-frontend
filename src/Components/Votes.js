@@ -17,9 +17,26 @@ let VotesComponent = () => {
     let [votes, setVotes] = useState([])
     let [columnsArray, setColumnsArray] = useState([])
     let navigate = useNavigate()
+
     useEffect(() => {
         getMeetingInfo()
     }, [])
+
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 600); // Update isSmallScreen based on window width
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+  
 
     let getVotes = async () => {
 
@@ -96,6 +113,7 @@ let VotesComponent = () => {
             title: '',
             dataIndex: 'name',
             key: 'name',
+            fixed: 'left'
         })
 
         currentMeeting?.dates?.map((d) => {
@@ -146,7 +164,7 @@ let VotesComponent = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    scroll={{ x: 900, y: 170 }}
+                    scroll={{ x: 300, y: 170 }}
                     bordered
                 />
             </div>
@@ -159,7 +177,33 @@ let VotesComponent = () => {
             url: `/participate/${token}/${meetingId}`
         })
     }
-
+    if (isSmallScreen) {
+        return(
+            <Flex style={{ height: "100vh", width: "100%" }}>
+            <Flex vertical style={{ border: "1px solid #D3DCE3", height: "100vh", backgroundColor: "white",width:"100%", borderRadius: 10 }}>
+                <Flex vertical style={{ borderBottom: "1px solid #D3DCE3", height: "40%", padding:10, justifyContent:"space-around" }}>
+                    <Flex style={{justifyContent:"center"}}>
+                        <Title level={2}>{meetingData?.title}</Title>
+                    </Flex>
+                    <Flex >
+                        <Button >Preview</Button>
+                        <Button style={{marginLeft:5, marginRight:5}} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
+                        <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>
+                    </Flex>
+                    <Text style={{marginTop:10 }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
+                    <Flex style={{justifyContent:"center", marginTop:10}}>
+                        <Text style={{ fontWeight: 'bold', fontSize:15 }}>Availabilities</Text>
+                    </Flex>
+                    <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                    <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                </Flex>
+                <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
+                    {renderDates()}
+                </Flex>
+            </Flex>
+        </Flex>
+        )
+    }
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
             <Flex vertical style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
