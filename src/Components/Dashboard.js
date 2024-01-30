@@ -57,8 +57,6 @@ let DashboarComponent = () => {
                         <Flex style={{ width: "20%" }}>
                             <Button type="dashed" danger>delete</Button>
                         </Flex>
-
-
                     </Flex>)}
             </Flex>
         </Flex>

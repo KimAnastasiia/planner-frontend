@@ -13,6 +13,7 @@ import SelectionOfDates from "./Components/SelectionOfDates";
 import DashboarComponent from "./Components/Dashboard";
 import VotesComponent from "./Components/Votes";
 import EditMeeting from "./Components/EditMeeting";
+import "./App.css"
 
 let App = () => {
 

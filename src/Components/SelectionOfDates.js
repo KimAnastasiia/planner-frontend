@@ -19,6 +19,23 @@ let SelectionOfDates = () => {
     let [disableButton, setDisableButton] = useState(true)
     let [columnsArray, setColumnsArray] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
+    const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const handleResize = () => {
+        setIsSmallScreen(window.innerWidth < 800); // Update isSmallScreen based on window width
+    };
+
+    useEffect(() => {
+        console.log(window.innerWidth)
+        
+        handleResize()
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [window.innerWidth]);
+
+  
     useEffect(() => {
         getMeetingInfo()
     }, [])
@@ -194,18 +211,48 @@ let SelectionOfDates = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    scroll={{ x: 900, y: 170 }}
+                    //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
                 <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>
             </div>
         )
     }
+    if(isSmallScreen){
+        return (
+            <Flex align='center' justify='center' style={{ width: "100%" }}>
+                {contextHolder}
+                <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, height: "100%", padding: 10}}>
+                    <Flex align='center' vertical>
+                        <Flex style={{ borderBottom: "1px solid #D3DCE3", paddingBottom:5 }} align='center'>
+                            <Avatar size="small"icon={<UserOutlined />} style={{ marginRight: 5 }} />
+                            <Flex align='center' vertical>
+                                <Text >{meetingData?.userEmail}</Text>
+                            </Flex>
+                        </Flex>
+                        <Flex vertical align="flex-start" justify="space-around" style={{ width: "100%", height: "30%"}}>
+                            <Title level={5}>{meetingData?.title}</Title>
+                            <Text ><img src='/left.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
+                            <Text ><img src='/pin.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
+                            <Text ><Checkbox style={{ marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                            <Text ><Checkbox style={{ marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                        </Flex>
+                        <Text style={{ fontWeight: 'bold', marginTop:10 }}>Select your preferred hours</Text>
+                        <Text style={{ marginBottom: 10 }}>We will notify you when the organizer chooses the best time</Text>
+                        <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
+                        <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
+                        {renderDates()}
+                    </Flex>
+                </Flex>
+            </Flex>
+        )
+    }
+
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
               {contextHolder}
-            <Flex style={{ border: "1px solid #D3DCE3", height: "70%", width: "1000px", backgroundColor: "white", borderRadius: 10 }}>
-                <Flex align='center' vertical style={{ width: "400px", borderRight: "1px solid #D3DCE3", padding: 30 }}>
+            <Flex style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10 }}>
+                <Flex align='center' vertical style={{ borderRight: "1px solid #D3DCE3", padding: 30 }}>
 
                     <Flex style={{ borderBottom: "1px solid #D3DCE3" }} align='center'>
                         <Avatar size="large" icon={<UserOutlined />} style={{ marginRight: 20 }} />
