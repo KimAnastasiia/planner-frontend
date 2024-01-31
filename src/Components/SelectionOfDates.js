@@ -50,9 +50,14 @@ let SelectionOfDates = () => {
 
     let getVotes = async (meetingData) => {
 
-        let response = await fetch(Commons.baseUrl + "/participation-public/" + id)
+        let response = await fetch(Commons.baseUrl + `/participation-public/${id}?voter_token=${localStorage.getItem("voter_token")}`)
         if (response.ok) {
             let data = await response.json()
+            data.map((el)=>{
+                if(el.token==localStorage.getItem("voter_token")){
+                    el.name="You"
+                }
+            })
             const result = data.reduce((acc, item) => {
                 if (acc.includes(item.name)) {
                     return acc; // если значение уже есть, то просто возвращаем аккумулятор
@@ -69,15 +74,18 @@ let SelectionOfDates = () => {
                     }
                 })
             })
-
-            let objetPutYourChoose = {
-                name: "You"
+            let userAlreadyVoted=data.find((el)=>el.name=="You")
+            
+            if(!userAlreadyVoted){
+                let objetPutYourChoose = {
+                    name: "You"
+                }
+                console.log(meetingData)
+                meetingData?.dates?.forEach((d) => {
+                    d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
+                })
+                newAr.unshift(objetPutYourChoose)
             }
-            console.log(meetingData)
-            meetingData?.dates?.forEach((d) => {
-                d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
-            })
-            newAr.unshift(objetPutYourChoose)
             setVotes(newAr)
 
         }
@@ -102,7 +110,7 @@ let SelectionOfDates = () => {
         let arrayOfTimes = [
             ...ids]
 
-        let response = await fetch(Commons.baseUrl + "/participation-public", {
+        let response = await fetch(Commons.baseUrl + "/participation-public?voter_token="+localStorage.getItem("voter_token"), {
 
             method: "POST",
             headers: {
@@ -117,11 +125,10 @@ let SelectionOfDates = () => {
         })
         if (response.ok) {
             let data = await response.json()
-            
+            localStorage.setItem('voter_token', data.token);
             setIds([])
             setName("")
             setEmail("")
-
             getVotes()
             success()
         }
@@ -214,7 +221,7 @@ let SelectionOfDates = () => {
                     //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
-                <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>
+                <Button onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>
             </div>
         )
     }
