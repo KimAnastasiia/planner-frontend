@@ -1,6 +1,5 @@
-/* eslint-disable no-undef */
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Avatar, Flex, Typography, message, Input, Checkbox, Table, Row, Select, theme } from 'antd';
+import { Button, Avatar, Flex, Typography, message, Input, Checkbox, Table, Switch, Tooltip, theme } from 'antd';
 import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
@@ -14,9 +13,10 @@ let SelectionOfDates = () => {
     let [name, setName] = useState("")
     let [email, setEmail] = useState("")
     const { Title } = Typography;
-    let [ids, setIds] = useState([])
+    const idsRef = useRef([]);
     let [votes, setVotes] = useState([])
     let [disableButton, setDisableButton] = useState(true)
+    let [voted, setVoted]=useState(false)
     let [columnsArray, setColumnsArray] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
     const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -55,7 +55,11 @@ let SelectionOfDates = () => {
             let data = await response.json()
             data.map((el)=>{
                 if(el.token==localStorage.getItem("voter_token")){
+                    setName(el.name)
+                    setEmail(el.userEmail)
+                    setVoted(true)
                     el.name="You"
+                    
                 }
             })
             const result = data.reduce((acc, item) => {
@@ -108,7 +112,7 @@ let SelectionOfDates = () => {
     let addParticipation = async () => {
 
         let arrayOfTimes = [
-            ...ids]
+            ...idsRef.current]
 
         let response = await fetch(Commons.baseUrl + "/participation-public?voter_token="+localStorage.getItem("voter_token"), {
 
@@ -126,11 +130,12 @@ let SelectionOfDates = () => {
         if (response.ok) {
             let data = await response.json()
             localStorage.setItem('voter_token', data.token);
-            setIds([])
+            idsRef.current=[]
             setName("")
             setEmail("")
             getVotes()
             success()
+          
         }
 
     }
@@ -142,23 +147,19 @@ let SelectionOfDates = () => {
       };
     let checkBoxChange = (e, timeId) => {
 
-        setIds((prevIds) => {
-            let copyOfTimesIds = [...prevIds];
+        const copyOfTimesIds = [...idsRef.current];
     
-            if (e.target.checked) {
-                let currentTime = copyOfTimesIds.find((time) => time === timeId);
+        if (e.target.checked) {
+            const currentTime = copyOfTimesIds.find(time => time === timeId);
     
-                if (!currentTime) {
-                    copyOfTimesIds = [...prevIds, timeId];
-                }
-            } else {
-                copyOfTimesIds = copyOfTimesIds.filter((time) => time !== timeId);
+            if (!currentTime) {
+                idsRef.current = [...copyOfTimesIds, timeId];
             }
+        } else {
+            idsRef.current = copyOfTimesIds.filter(time => time !== timeId);
+        }
     
-            console.log(copyOfTimesIds); // This will log the updated array
-    
-            return copyOfTimesIds;
-        });
+        console.log(idsRef.current); // This will log the updated array
     }
 
     let createColumns = (currentMeeting) => {
@@ -168,6 +169,7 @@ let SelectionOfDates = () => {
             title: '',
             dataIndex: 'name',
             key: 'name',
+            color:"#E8134B"
         })
     
         currentMeeting?.dates?.map((d) => {
@@ -182,9 +184,6 @@ let SelectionOfDates = () => {
                 const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
                 const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
 
-
-
-             
                 columns.push({
                     title:
                         <Flex key={t.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
@@ -196,7 +195,7 @@ let SelectionOfDates = () => {
 
                     dataIndex: t.id,
                     key: t.id,
-                    render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                    render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
                 })
 
 
@@ -221,14 +220,60 @@ let SelectionOfDates = () => {
                     //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
-                <Button onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>
+                {!voted && <Button onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>}
             </div>
         )
     }
+    let searchObjectsByValueOne=(array)=>{
+        const result = [];
+        array.forEach(obj => {
+            // Check each property value for equality to 1
+            Object.entries(obj).forEach(([key, value])  => {
+                if (value === "x" && obj.name=="You") {
+                    result.push(key);
+                }
+            });
+        });
+        return result;
+    }
+    let editAnswer=()=>{
+
+        let arrayOfSelectedDates = searchObjectsByValueOne(votes)
+        idsRef.current=arrayOfSelectedDates
+        let temp =votes.filter((el)=>el.name!=="You")
+        let objetPutYourChoose = {
+            name: "You"
+        }
+        meetingData?.dates?.forEach((d) => {
+            d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
+        })
+        temp.push(objetPutYourChoose)
+
+
+        setVoted(false)
+        setVotes(temp)
+
+    }
     if(isSmallScreen){
         return (
-            <Flex align='center' justify='center' style={{ width: "100%" }}>
+            <Flex vertical align='center' justify='center' style={{ width: "100%" }}>
                 {contextHolder}
+                {voted && 
+                    <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10}}>
+                        <Text style={{ fontWeight: 'bold', marginBottom:5 }}><img src='/calendar.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />Reply sent!</Text>
+                        <Text >Now it depends on the organizer. We will send you an email to <Text style={{ fontWeight: 'bold' }}>{email}</Text> when will the selected final hour.</Text>
+                        <Flex align='center' style={{marginTop:10, marginBottom:10}}>
+
+                            <Switch style={{marginRight:10}} size="small" />
+                            <Text style={{marginRight:5}}>Receive event updates</Text>
+                            <Tooltip  color='#448BA7' placement="top" title={"We will send you an email when someone responds"}>
+                                <img  src='/exclamation.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />
+                            </Tooltip>
+
+                        </Flex>
+                        <Button onClick={editAnswer}  style={{color:"gray", width:"50%"}}>Change your answer</Button>
+                    </Flex>
+                }
                 <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, height: "100%", padding: 10}}>
                     <Flex align='center' vertical>
                         <Flex style={{ borderBottom: "1px solid #D3DCE3", paddingBottom:5 }} align='center'>
@@ -242,12 +287,15 @@ let SelectionOfDates = () => {
                             <Text ><img src='/left.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
                             <Text ><img src='/pin.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
                             <Text ><Checkbox style={{ marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                            <Text ><Checkbox style={{ marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                            <Text ><Checkbox style={{ marginRight: 10, marginBottom:10 }} checked={false}></Checkbox>No, i can not </Text>
                         </Flex>
-                        <Text style={{ fontWeight: 'bold', marginTop:10 }}>Select your preferred hours</Text>
-                        <Text style={{ marginBottom: 10 }}>We will notify you when the organizer chooses the best time</Text>
-                        <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
-                        <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
+                       {!voted && 
+                       <>
+                            <Text style={{ fontWeight: 'bold'}}>Select your preferred hours</Text>
+                            <Text style={{ marginBottom: 10 }}>We will notify you when the organizer chooses the best time</Text>
+                            <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
+                            <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
+                        </>}
                         {renderDates()}
                     </Flex>
                 </Flex>
@@ -256,12 +304,31 @@ let SelectionOfDates = () => {
     }
 
     return (
-        <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
+        <Flex vertical align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
               {contextHolder}
+              {voted && 
+                    <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10, width:"66%"}}>
+                        <Text style={{  marginBottom:5, fontSize:25 }}><img src='/calendar.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />Reply sent!</Text>
+                        <Text >Now it depends on the organizer. We will send you an email to <Text style={{ fontWeight: 'bold' }}>{email}</Text> when will the selected final hour.</Text>
+                        <Flex justify="space-between" align='center' style={{marginTop:10, marginBottom:10}}>
+
+                            <Flex align='center'>
+                                <Switch style={{marginRight:10}} size="small" />
+                                <Text style={{marginRight:5}}>Receive event updates</Text>
+                                <Tooltip  color='#448BA7' placement="top" title={"We will send you an email when someone responds"}>
+                                    <img  src='/exclamation.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />
+                                </Tooltip>
+                            </Flex>
+
+                            <Button onClick={editAnswer} style={{color:"gray", width:"30%"}}>Change your answer</Button>
+                        </Flex>
+                       
+                    </Flex>
+                }
             <Flex style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10 }}>
                 <Flex align='center' vertical style={{ borderRight: "1px solid #D3DCE3", padding: 30 }}>
 
-                    <Flex style={{ borderBottom: "1px solid #D3DCE3" }} align='center'>
+                    <Flex style={{ borderBottom: "1px solid #D3DCE3", marginBottom:20 }} align='center'>
                         <Avatar size="large" icon={<UserOutlined />} style={{ marginRight: 20 }} />
                         <Flex align='center' vertical>
                             <Title level={5}>{meetingData?.userEmail}</Title>
@@ -285,10 +352,14 @@ let SelectionOfDates = () => {
                 </Flex>
 
                 <Flex align='center' vertical style={{ width: "600px", padding: 20 }}>
-                    <Title level={2}>Select your preferred hours</Title>
-                    <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
-                    <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
-                    <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
+                {!voted && 
+                    <>
+                        <Title level={2}>Select your preferred hours</Title>
+                        <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
+                        <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
+                        <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
+                    </>
+                    }
                     {renderDates()}
                 </Flex>
             </Flex>
