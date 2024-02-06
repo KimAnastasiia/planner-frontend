@@ -12,6 +12,7 @@ let SelectionOfDates = () => {
     let [meetingData, setMeetingData] = useState()
     let [name, setName] = useState("")
     let [email, setEmail] = useState("")
+    let [editButton, setEditButton] = useState(false)
     const { Title } = Typography;
     const idsRef = useRef([]);
     let [votes, setVotes] = useState([])
@@ -108,7 +109,36 @@ let SelectionOfDates = () => {
         }
 
     }
+    let putParticipation = async () => {
 
+        let arrayOfTimes = [
+            ...idsRef.current]
+
+        let response = await fetch(Commons.baseUrl + "/participation-public?voter_token="+localStorage.getItem("voter_token"), {
+
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                userEmail: email,
+                name: name,
+                meetingId: meetingData.id,
+                timesIds: arrayOfTimes
+            })
+        })
+        if (response.ok) {
+            let data = await response.json()
+            localStorage.setItem('voter_token', data.token);
+            idsRef.current=[]
+            setName("")
+            setEmail("")
+            getVotes()
+            success()
+            setEditButton(false)
+        }
+
+    }
     let addParticipation = async () => {
 
         let arrayOfTimes = [
@@ -220,7 +250,8 @@ let SelectionOfDates = () => {
                     //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
-                {!voted && <Button onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>}
+                {(!voted && !editButton) && <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>}
+                {editButton && <Button disabled={disableButton} onClick={putParticipation} type="primary" style={{ width: "100%" }}>Edit</Button>}
             </div>
         )
     }
@@ -249,7 +280,7 @@ let SelectionOfDates = () => {
         })
         temp.push(objetPutYourChoose)
 
-
+        setEditButton(true)
         setVoted(false)
         setVotes(temp)
 
