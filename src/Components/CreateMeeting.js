@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Button, message, Flex, Input, Switch, Form, Calendar, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
@@ -19,15 +19,36 @@ let CreateMeeting = () => {
     });
     let indexTime = useRef(0)
     const [selectedDate, setSelectedDate] = useState([])
+    const [defaultTime, setDefaultTime] = useState("")
     const [messageApi, contextHolder] = message.useMessage();
+    const [sameTimeForAll, setSameTimeForAll] = useState(false)
+
+    useEffect(() => {
+       if(sameTimeForAll){
+            addDefaultTime()
+       }
+    }, [sameTimeForAll,defaultTime, selectedDate.length]);
+
 
     let CreateNewMeeting = async () => {
+
+        if(formData.title!=""&& (formData.location!="" || formData.onlineConference!=false) && selectedDate.length>0){
+            let dateWithoutTime = selectedDate.find(d => d.times.length==0)
+
+            if(dateWithoutTime){
+                return didntAddAllInfo("in time of meetings")
+            }
+        }else{
+            return didntAddAllInfo("in Title, Description, Location and days of meeting")
+        }
+
+        
         let objToSent = {
             ...formData,
             dates: [...selectedDate]
         }
 
-        let response = await fetch("http://localhost:3001/meetings?access_token=" + localStorage.getItem("access_token"), {
+        let response = await fetch(Commons.baseUrl +"/meetings?access_token=" + localStorage.getItem("access_token"), {
 
             method: "POST",
             headers: {
@@ -39,10 +60,30 @@ let CreateMeeting = () => {
             let data = await response.json()
             setSelectedDate([])
             navigate("/votes/" +data.token+"/"+data.meetingId)
-
+            success()
+        }else{
+            failed()
         }
 
     }
+    const success = () => {
+        messageApi.open({
+          type: 'success',
+          content: 'The meeting created successfully',
+        });
+    };
+    const failed = () => {
+        messageApi.open({
+          type: "error",
+          content: 'Failed to create meeting, check the correctness of the entered data',
+        });
+    };
+    const didntAddAllInfo = (data) => {
+        messageApi.open({
+          type: "error",
+          content: 'Please enter data '+data,
+        });
+    };
     const onChange = (checked) => {
         setFormData({
             ...formData,
@@ -58,8 +99,8 @@ let CreateMeeting = () => {
     const onSelectCalendar = (date, { source }) => {
         if (source === 'date') {
             let dateNew = date.format('YYYY-MM-DD')
-            console.log('Panel Select:', source);
-            console.log(dateNew)
+            //console.log('Panel Select:', source);
+            //console.log(dateNew)
             //dataNew
             let copyOfDay = [...selectedDate]
             let currentDay = copyOfDay.find((d) => d.date == dateNew)
@@ -73,10 +114,14 @@ let CreateMeeting = () => {
         width: 300,
         border: `1px solid ${token.colorBorderSecondary}`,
         borderRadius: token.borderRadiusLG,
+        marginRight:10
     };
     const handleInputChange = (e, name, day) => {
-      
-        if (name == "time") {
+        if(name=="defaultTime"){
+            let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
+            setDefaultTime(curTime)
+           
+        }else if (name == "time") {
             let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
             indexTime.current = indexTime.current + 1
             let copyOfDay = [...selectedDate]
@@ -107,6 +152,27 @@ let CreateMeeting = () => {
 
         setSelectedDate(currentDays)
     }
+    const addDefaultTime=()=>{
+        
+        if(defaultTime!=""){ 
+
+            let copyOfDay = [...selectedDate]
+
+            copyOfDay.map((d)=>{
+
+                let exist = d.times.find((t)=>t.time==defaultTime)
+
+                if(!exist){
+                    indexTime.current = indexTime.current + 1
+                    d.times.push({ time: defaultTime, timeId: indexTime.current })
+                }
+            })
+
+            setSelectedDate(copyOfDay)
+        }
+
+    }
+
     const deleteDay = (day) => {
         let copyOfDays = [...selectedDate]
         let currentDays = copyOfDays.filter((d) => d.date !== day)
@@ -228,6 +294,14 @@ let CreateMeeting = () => {
                         />
                     </div>
                     <div>
+                       {selectedDate.length>0&&
+                        <Flex vertical align='center'>
+                            <Flex>
+                                <Typography.Title level={5} style={{ marginRight: 20 }}>Add same time to all dates</Typography.Title>
+                                <Switch value={sameTimeForAll} onChange={()=>{setSameTimeForAll(!sameTimeForAll)}} style={{ width: "30px" }} />
+                            </Flex>
+                            {sameTimeForAll&&<TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "defaultTime") }}  format={"HH:mm"} style={{ margin: 20 }} />}
+                        </Flex>}
                         {selectedDate.map((date) =>
 
                             <Flex align="center" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
