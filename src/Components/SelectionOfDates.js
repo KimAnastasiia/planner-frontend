@@ -124,7 +124,8 @@ let SelectionOfDates = () => {
                 userEmail: email,
                 name: name,
                 meetingId: meetingData.id,
-                timesIds: arrayOfTimes
+                timesIds: arrayOfTimes,
+                userToken:token
             })
         })
         if (response.ok) {
@@ -154,7 +155,8 @@ let SelectionOfDates = () => {
                 userEmail: email,
                 name: name,
                 meetingId: meetingData.id,
-                timesIds: arrayOfTimes
+                timesIds: arrayOfTimes,
+                userToken:token
             })
         })
         if (response.ok) {
