@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, Avatar, Flex, Typography, message, Input, Checkbox, Table, Switch, Tooltip, theme } from 'antd';
+import { Button, Avatar, Flex, Typography, message, Input, Checkbox, Table, Switch, Tooltip, Select } from 'antd';
 import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
@@ -21,6 +21,7 @@ let SelectionOfDates = () => {
     let [columnsArray, setColumnsArray] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
     const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [datesForSelect, setDatesForSelect] =useState([])
     const handleResize = () => {
         setIsSmallScreen(window.innerWidth < 800); // Update isSmallScreen based on window width
     };
@@ -98,14 +99,26 @@ let SelectionOfDates = () => {
 
     }
 
-    let getMeetingInfo = async () => {
+    let getMeetingInfo = async (date) => {
         let response = await fetch(Commons.baseUrl + `/meetings-public?meetingId=${id}&token=${token}`)
         if (response.ok) {
             let data = await response.json()
             console.log(data)
             setMeetingData(data[0])
-            createColumns(data[0])
+            createColumns(data[0], date)
             getVotes(data[0])
+            let arrayInSelect=[{
+                value:"",
+                label:"Show all"
+            }]
+
+            data[0].dates.forEach((d)=>{
+                arrayInSelect.push({
+                    value:d.date,
+                    label:d.date
+                })
+            })
+            setDatesForSelect(arrayInSelect)
         }
 
     }
@@ -194,7 +207,7 @@ let SelectionOfDates = () => {
         console.log(idsRef.current); // This will log the updated array
     }
 
-    let createColumns = (currentMeeting) => {
+    let createColumns = (currentMeeting, date) => {
 
         let columns=[]
         columns.push({
@@ -205,42 +218,53 @@ let SelectionOfDates = () => {
         })
     
         currentMeeting?.dates?.map((d) => {
+            if(d.date==date || !date){
+                return d.times.map((t) => {
 
-            return d.times.map((t) => {
+                    const dateArray = d.date.split("-");
+                    const year = parseInt(dateArray[0], 10);
+                    const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
+                    const day = parseInt(dateArray[2], 10);
+                    const dateObject = new Date(year, month, day)
+                    const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
+                    const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
 
-                const dateArray = d.date.split("-");
-                const year = parseInt(dateArray[0], 10);
-                const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-                const day = parseInt(dateArray[2], 10);
-                const dateObject = new Date(year, month, day)
-                const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-                const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
+                    columns.push({
+                        date:d.date,
+                        title:
+                            <Flex key={t.id} align='center' justify='center' vertical style={{ width: "100%" }}  >
+                                <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
+                                <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
+                                <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
+                                <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
+                            </Flex>,
 
-                columns.push({
-                    title:
-                        <Flex key={t.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                            <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                            <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                            <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                            <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                        </Flex>,
-
-                    dataIndex: t.id,
-                    key: t.id,
-                    render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
-                })
-
+                        dataIndex: t.id,
+                        key: t.id,
+                        render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                    })
 
 
-            }
 
-            )
+                }
+
+            )}
         })
         if (columns.length > 0) {
             setColumnsArray(columns)
         }
     }
-
+    
+    const onChangeSelect =(value)=>{
+        
+        getMeetingInfo(value)
+        /*
+        let newColumsArray = [...columnsArray]
+        newColumsArray=newColumsArray.filter((d)=>d.date ==value)
+        
+        setColumnsArray(newColumsArray)
+        */
+    }
 
     let renderDates = () => {
 
@@ -329,6 +353,14 @@ let SelectionOfDates = () => {
                             <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
                             <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
                         </>}
+                        <Select
+                            showSearch
+                            placeholder="Select a person"
+                            optionFilterProp="children"
+                            options={datesForSelect}
+                            onChange={onChangeSelect}
+                            style={{width:"90%",marginBottom:10}}
+                        />
                         {renderDates()}
                     </Flex>
                 </Flex>
@@ -393,6 +425,14 @@ let SelectionOfDates = () => {
                         <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
                     </>
                     }
+                    <Select
+                        showSearch
+                        placeholder="Select a person"
+                        optionFilterProp="children"
+                        options={datesForSelect}
+                        onChange={onChangeSelect}
+                        style={{width:"90%", marginBottom:10}}
+                    />
                     {renderDates()}
                 </Flex>
             </Flex>
