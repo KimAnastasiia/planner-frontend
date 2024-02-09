@@ -211,7 +211,8 @@ let SelectionOfDates = () => {
             title: '',
             dataIndex: 'name',
             key: 'name',
-            color:"#E8134B"
+            color:"#E8134B",
+            fixed: 'left'
         })
     
         currentMeeting?.dates?.map((d) => {
@@ -296,7 +297,7 @@ let SelectionOfDates = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    //scroll={{ x: 900, y: 170 }}
+                    scroll={{ x: 900, y: 170 }}
                     bordered
                 />
                 {(!voted && !editButton) && <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>}

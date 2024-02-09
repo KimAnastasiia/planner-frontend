@@ -207,7 +207,7 @@ let VotesComponent = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    scroll={{ x: 300, y: 170 }}
+                    scroll={{ x: 900, y: 170 }}
                     bordered
                 />
             </div>
@@ -240,7 +240,7 @@ let VotesComponent = () => {
                     <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
                     <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
                 </Flex>
-                <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
+                <Flex align='center' vertical style={{ width: "100%", minHeight: "60%", padding: 20 }}>
                     <Select
                         mode="multiple"
                         allowClear
