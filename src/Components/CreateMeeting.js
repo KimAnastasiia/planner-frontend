@@ -26,6 +26,8 @@ let CreateMeeting = () => {
     useEffect(() => {
        if(sameTimeForAll){
             addDefaultTime()
+       }else{
+        setDefaultTime("")
        }
     }, [sameTimeForAll,defaultTime, selectedDate.length]);
 

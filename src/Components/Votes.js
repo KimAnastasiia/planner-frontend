@@ -7,7 +7,7 @@ import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 let VotesComponent = () => {
-
+    const [datesForSelect, setDatesForSelect] =useState([])
     const { Text } = Typography;
     const { meetingId } = useParams()
     const { token } = useParams()
@@ -69,13 +69,22 @@ let VotesComponent = () => {
 
     }
 
-    let getMeetingInfo = async () => {
+    let getMeetingInfo = async (arrayOfDates) => {
         let response = await fetch(Commons.baseUrl + `/meetings?meetingId=${meetingId}&token=${token}&access_token=${localStorage.getItem("access_token")}`)
         if (response.ok) {
             let data = await response.json()
             setMeetingData(data[0])
-            createColumns(data[0])
+            createColumns(data[0], arrayOfDates)
             getVotes(data[0])
+            let arrayInSelect=[]
+
+            data[0].dates.forEach((d)=>{
+                arrayInSelect.push({
+                    value:d.date,
+                    label:d.date
+                })
+            })
+            setDatesForSelect(arrayInSelect)
         }
 
     }
@@ -103,8 +112,12 @@ let VotesComponent = () => {
         }
 
     }
+    const onChangeSelect =(arrayOfDates)=>{
+        
+        getMeetingInfo(arrayOfDates)
 
-    let createColumns = (currentMeeting) => {
+    }
+    let createColumns = (currentMeeting, arrayOfDates) => {
 
         let columns = []
 
@@ -116,39 +129,70 @@ let VotesComponent = () => {
         })
 
         currentMeeting?.dates?.map((d) => {
+            if(arrayOfDates?.length>0 ){
 
-            return d.times.map((t) => {
+                arrayOfDates?.forEach((daySelected)=>{
+                    if(d.date==daySelected){
+                        return d.times.map((t) => {
 
-                const dateArray = d.date.split("-");
-                const year = parseInt(dateArray[0], 10);
-                const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-                const day = parseInt(dateArray[2], 10);
-                const dateObject = new Date(year, month, day)
-                const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-                const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
+                            const dateArray = d.date.split("-");
+                            const year = parseInt(dateArray[0], 10);
+                            const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
+                            const day = parseInt(dateArray[2], 10);
+                            const dateObject = new Date(year, month, day)
+                            const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
+                            const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
 
 
 
 
-                columns.push({
-                    title:
-                        <Flex key={t.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                            <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                            <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                            <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                            <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                        </Flex>,
+                            columns.push({
+                                title:
+                                    <Flex key={t.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
+                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
+                                        <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
+                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
+                                        <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
+                                    </Flex>,
 
-                    dataIndex: t.id,
-                    key: t.id,
-                    render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                                dataIndex: t.id,
+                                key: t.id,
+                                render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                            })
+
+
+
+                        })
+                    }
                 })
+            }else{
+              
+                return d.times.map((t) => {
 
+                    const dateArray = d.date.split("-");
+                    const year = parseInt(dateArray[0], 10);
+                    const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
+                    const day = parseInt(dateArray[2], 10);
+                    const dateObject = new Date(year, month, day)
+                    const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
+                    const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
 
+                    columns.push({
+                        date:d.date,
+                        title:
+                            <Flex key={t.id} align='center' justify='center' vertical style={{ width: "100%" }}  >
+                                <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
+                                <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
+                                <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
+                                <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
+                            </Flex>,
 
+                        dataIndex: t.id,
+                        key: t.id,
+                        render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                    })
+                })
             }
-
-            )
         })
         if (columns.length > 0) {
             setColumnsArray(columns)
@@ -197,6 +241,16 @@ let VotesComponent = () => {
                     <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
                 </Flex>
                 <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        showSearch
+                        placeholder="Filter by days"
+                        optionFilterProp="children"
+                        options={datesForSelect}
+                        onChange={onChangeSelect}
+                        style={{width:"90%", marginBottom:10}}
+                    />
                     {renderDates()}
                 </Flex>
             </Flex>
@@ -224,6 +278,16 @@ let VotesComponent = () => {
                         </Flex>
                     </Flex>
                     <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
+                        <Select
+                            mode="multiple"
+                            allowClear
+                            showSearch
+                            placeholder="Filter by days"
+                            optionFilterProp="children"
+                            options={datesForSelect}
+                            onChange={onChangeSelect}
+                            style={{width:"30%", marginBottom:10}}
+                        />
                         {renderDates()}
                     </Flex>
                 </Flex>
