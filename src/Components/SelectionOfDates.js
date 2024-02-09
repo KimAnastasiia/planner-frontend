@@ -99,18 +99,15 @@ let SelectionOfDates = () => {
 
     }
 
-    let getMeetingInfo = async (date) => {
+    let getMeetingInfo = async (arrayOfDates) => {
         let response = await fetch(Commons.baseUrl + `/meetings-public?meetingId=${id}&token=${token}`)
         if (response.ok) {
             let data = await response.json()
             console.log(data)
             setMeetingData(data[0])
-            createColumns(data[0], date)
+            createColumns(data[0], arrayOfDates)
             getVotes(data[0])
-            let arrayInSelect=[{
-                value:"",
-                label:"Show all"
-            }]
+            let arrayInSelect=[]
 
             data[0].dates.forEach((d)=>{
                 arrayInSelect.push({
@@ -207,7 +204,7 @@ let SelectionOfDates = () => {
         console.log(idsRef.current); // This will log the updated array
     }
 
-    let createColumns = (currentMeeting, date) => {
+    let createColumns = (currentMeeting, arrayOfDates) => {
 
         let columns=[]
         columns.push({
@@ -218,7 +215,42 @@ let SelectionOfDates = () => {
         })
     
         currentMeeting?.dates?.map((d) => {
-            if(d.date==date || !date){
+            if(arrayOfDates?.length>0 ){
+                arrayOfDates?.forEach((daySelected)=>{
+                    if(d.date==daySelected){
+                        return d.times.map((t) => {
+
+                            const dateArray = d.date.split("-");
+                            const year = parseInt(dateArray[0], 10);
+                            const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
+                            const day = parseInt(dateArray[2], 10);
+                            const dateObject = new Date(year, month, day)
+                            const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
+                            const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
+
+                            columns.push({
+                                date:d.date,
+                                title:
+                                    <Flex key={t.id} align='center' justify='center' vertical style={{ width: "100%" }}  >
+                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
+                                        <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
+                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
+                                        <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
+                                    </Flex>,
+
+                                dataIndex: t.id,
+                                key: t.id,
+                                render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                            })
+
+
+
+                        }
+
+                    )}
+                })
+            }else{
+              
                 return d.times.map((t) => {
 
                     const dateArray = d.date.split("-");
@@ -243,27 +275,18 @@ let SelectionOfDates = () => {
                         key: t.id,
                         render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
                     })
-
-
-
-                }
-
-            )}
+                })
+            }
         })
         if (columns.length > 0) {
             setColumnsArray(columns)
         }
     }
     
-    const onChangeSelect =(value)=>{
+    const onChangeSelect =(arrayOfDates)=>{
         
-        getMeetingInfo(value)
-        /*
-        let newColumsArray = [...columnsArray]
-        newColumsArray=newColumsArray.filter((d)=>d.date ==value)
-        
-        setColumnsArray(newColumsArray)
-        */
+        getMeetingInfo(arrayOfDates)
+
     }
 
     let renderDates = () => {
@@ -354,8 +377,10 @@ let SelectionOfDates = () => {
                             <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
                         </>}
                         <Select
+                            mode="multiple"
+                            allowClear
                             showSearch
-                            placeholder="Select a person"
+                            placeholder="Filter by days"
                             optionFilterProp="children"
                             options={datesForSelect}
                             onChange={onChangeSelect}
@@ -426,8 +451,10 @@ let SelectionOfDates = () => {
                     </>
                     }
                     <Select
+                        mode="multiple"
+                        allowClear
                         showSearch
-                        placeholder="Select a person"
+                        placeholder="Filter by days"
                         optionFilterProp="children"
                         options={datesForSelect}
                         onChange={onChangeSelect}
