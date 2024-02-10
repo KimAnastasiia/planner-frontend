@@ -267,8 +267,19 @@ let SelectionOfDates = () => {
                                         <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
                                         <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
                                         <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                                        {temp?<Text><Image style={{width:20, height:20}} src='/audience.png'></Image>{temp.numberOfVotes}</Text>:
-                                     <Text><Image style={{width:20, height:20}} src='/audience.png'></Image>0</Text>}
+                                        {temp?
+                                            <Tooltip  color='#448BA7' placement="top" title={temp.names.join(', ')}>
+                                                <Text>
+                                                    <Image style={{width:20, height:20}} src='/audience.png'></Image>
+                                                    {temp.numberOfVotes}
+                                                </Text>
+                                            </Tooltip>
+                                            :
+                                            <Text>
+                                                <Image style={{width:20, height:20}} src='/audience.png'></Image>
+                                                0
+                                            </Text>
+                                        }
                                     </Flex>,
 
                                 dataIndex: t.id,
@@ -302,8 +313,19 @@ let SelectionOfDates = () => {
                                     <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
                                     <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
                                     <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                                    {temp?<Text><Image style={{width:20, height:20}} src='/audience.png'></Image>{temp.numberOfVotes}</Text>:
-                                     <Text><Image style={{width:20, height:20}} src='/audience.png'></Image>0</Text>}
+                                    {temp?
+                                        <Tooltip  color='#448BA7' placement="top" title={temp.names.join(', ')}>
+                                            <Text>
+                                                <Image style={{width:20, height:20}} src='/audience.png'></Image>
+                                                {temp.numberOfVotes}
+                                            </Text>
+                                        </Tooltip>
+                                        :
+                                        <Text>
+                                            <Image style={{width:20, height:20}} src='/audience.png'></Image>
+                                            0
+                                        </Text>
+                                    }
                                 </Flex>,
 
                             dataIndex: t.id,
