@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useState, useEffect } from 'react';
-import { Button, Avatar, Flex, Card, Col, Row, Typography, Pagination, Input, Checkbox, Table, Select, theme } from 'antd';
+import { Button, Avatar, Flex, Card, Col, Image, Typography, Pagination, Input, Checkbox, Table, Select, theme } from 'antd';
 import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
@@ -63,7 +63,7 @@ let VotesComponent = () => {
             })
 
             setVotes(newAr)
-
+            return countVotess(newAr)
         }
 
 
@@ -74,8 +74,8 @@ let VotesComponent = () => {
         if (response.ok) {
             let data = await response.json()
             setMeetingData(data[0])
-            createColumns(data[0], arrayOfDates)
-            getVotes(data[0])
+            let infoOfVotes = await getVotes(data[0])
+            createColumns(data[0], arrayOfDates, infoOfVotes)
             let arrayInSelect=[]
 
             data[0].dates.forEach((d)=>{
@@ -117,7 +117,7 @@ let VotesComponent = () => {
         getMeetingInfo(arrayOfDates)
 
     }
-    let createColumns = (currentMeeting, arrayOfDates) => {
+    let createColumns = (currentMeeting, arrayOfDates, infoOfVotes) => {
 
         let columns = []
 
@@ -134,7 +134,7 @@ let VotesComponent = () => {
                 arrayOfDates?.forEach((daySelected)=>{
                     if(d.date==daySelected){
                         return d.times.map((t) => {
-
+                            let temp =  infoOfVotes.find((vInfo)=>vInfo.timeId==t.id)
                             const dateArray = d.date.split("-");
                             const year = parseInt(dateArray[0], 10);
                             const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
@@ -153,6 +153,8 @@ let VotesComponent = () => {
                                         <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
                                         <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
                                         <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
+                                        {temp?<Text><Image style={{width:20, height:20}} src='/audience.png'></Image>{temp.numberOfVotes}</Text>:
+                                     <Text><Image style={{width:20, height:20}} src='/audience.png'></Image>0</Text>}
                                     </Flex>,
 
                                 dataIndex: t.id,
@@ -168,7 +170,7 @@ let VotesComponent = () => {
             }else{
               
                 return d.times.map((t) => {
-
+                    let temp =  infoOfVotes.find((vInfo)=>vInfo.timeId==t.id)
                     const dateArray = d.date.split("-");
                     const year = parseInt(dateArray[0], 10);
                     const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
@@ -185,6 +187,8 @@ let VotesComponent = () => {
                                 <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
                                 <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
                                 <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
+                                {temp?<Text><Image style={{width:20, height:20}} src='/audience.png'></Image>{temp.numberOfVotes}</Text>:
+                                     <Text><Image style={{width:20, height:20}} src='/audience.png'></Image>0</Text>}
                             </Flex>,
 
                         dataIndex: t.id,
@@ -199,7 +203,32 @@ let VotesComponent = () => {
         }
     }
 
+    let countVotess=(arrOfVotes)=>{
+        arrOfVotes = arrOfVotes.filter(av =>isNaN(Object.values(av)[0]) && isNaN(Object.values(av)[1]) );
 
+        let votesStadistic=[]
+
+        arrOfVotes.forEach((v)=>{
+            const attributeNamesArray = Object.keys(v);
+            attributeNamesArray.forEach((atrName)=>{
+                if(atrName!="name"){
+                    let exist = votesStadistic.find((date)=>date.timeId==atrName )
+                    if(!exist){
+                        votesStadistic.push({
+                            numberOfVotes:1,
+                            timeId:atrName,
+                            names:[v.name]
+                        })
+                    }else{
+                        exist.numberOfVotes++
+                        exist.names.push(v.name)
+                    }
+                }
+            })
+        })
+        //setInfoOfVotes(votesStadistic)
+        return votesStadistic
+    }
     let renderDates = () => {
 
         return (
