@@ -178,10 +178,8 @@ let SelectionOfDates = () => {
         }
 
     }
-    let addParticipation = async () => {
+    let addParticipation = async (time) => {
 
-        let arrayOfTimes = [
-            ...idsRef.current]
 
         let response = await fetch(Commons.baseUrl + "/participation-public?voter_token="+localStorage.getItem("voter_token"), {
 
@@ -193,20 +191,21 @@ let SelectionOfDates = () => {
                 userEmail: email,
                 name: name,
                 meetingId: meetingData.id,
-                timesIds: arrayOfTimes,
+                time: time,
                 userToken:token
             })
         })
         if (response.ok) {
+
             let data = await response.json()
             localStorage.setItem('voter_token', data.token);
+            /*
             idsRef.current=[]
             setName("")
             setEmail("")
             getMeetingInfo()
-            //getVotes()
             success()
-          
+          */
         }
 
     }
@@ -224,7 +223,8 @@ let SelectionOfDates = () => {
             const currentTime = copyOfTimesIds.find(time => time === timeId);
     
             if (!currentTime) {
-                idsRef.current = [...copyOfTimesIds, timeId];
+                //idsRef.current = [...copyOfTimesIds, timeId]; 
+                addParticipation(timeId)
             }
         } else {
             idsRef.current = copyOfTimesIds.filter(time => time !== timeId);
@@ -237,7 +237,7 @@ let SelectionOfDates = () => {
 
         let columns=[]
         columns.push({
-            title: '',
+            title: 'Participants',
             dataIndex: 'name',
             key: 'name',
             color:"#E8134B",
@@ -354,10 +354,9 @@ let SelectionOfDates = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    scroll={{ x: 900, y: 170 }}
+                    //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
-                {(!voted && !editButton) && <Button disabled={disableButton} onClick={addParticipation} type="primary" style={{ width: "100%" }}>Save</Button>}
                 {editButton && <Button disabled={disableButton} onClick={putParticipation} type="primary" style={{ width: "100%" }}>Edit</Button>}
             </div>
         )

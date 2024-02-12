@@ -258,7 +258,7 @@ let VotesComponent = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    scroll={{ x: 900, y: 170 }}
+                    //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
             </div>
