@@ -191,7 +191,7 @@ let SelectionOfDates = () => {
                 userEmail: email,
                 name: name,
                 meetingId: meetingData.id,
-                time: time,
+                time: {id: time},
                 userToken:token
             })
         })
@@ -208,6 +208,15 @@ let SelectionOfDates = () => {
           */
         }
 
+    }
+    let deleteParticipation=async(time)=>{
+
+        let response = await fetch(Commons.baseUrl + `/participation-public/${time}?voter_token=${localStorage.getItem("voter_token")}`, {
+            method: 'DELETE'
+          })
+          if (response.ok) {
+
+          }
     }
     const success = () => {
         messageApi.open({
@@ -228,6 +237,7 @@ let SelectionOfDates = () => {
             }
         } else {
             idsRef.current = copyOfTimesIds.filter(time => time !== timeId);
+            deleteParticipation(timeId)
         }
     
         console.log(idsRef.current); // This will log the updated array
