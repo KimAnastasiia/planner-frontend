@@ -22,7 +22,6 @@ let SelectionOfDates = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [datesForSelect, setDatesForSelect] =useState([])
-    //const [infoOfVotes, setInfoOfVotes] =useState([])
     const handleResize = () => {
         setIsSmallScreen(window.innerWidth < 800); // Update isSmallScreen based on window width
     };
@@ -401,6 +400,18 @@ let SelectionOfDates = () => {
         setVotes(temp)
 
     }
+    const hideAllPastDates=(checked)=>{
+        
+        if(checked){
+            const currentDate = new Date(Date.now());
+            let tempArray = [...columnsArray]
+            tempArray=tempArray.filter((c)=>new Date(c.date)>currentDate||c.title=="Participants")
+            console.log(tempArray)
+            setColumnsArray(tempArray)
+        }else{
+            getMeetingInfo()
+        }
+    }
     if(isSmallScreen){
         return (
             <Flex vertical align='center' justify='center' style={{ width: "100%" }}>
@@ -453,6 +464,10 @@ let SelectionOfDates = () => {
                             onChange={onChangeSelect}
                             style={{width:"90%",marginBottom:10}}
                         />
+                        <Flex style={{width:"100%",marginBottom: 20}}>
+                            <Text style={{marginRight:10}}>Show only actual dates</Text>
+                            <Switch onChange={hideAllPastDates}/>
+                        </Flex>
                         {renderDates()}
                     </Flex>
                 </Flex>
@@ -513,6 +528,10 @@ let SelectionOfDates = () => {
                         <>
                             <Title level={2}>Select your preferred hours</Title>
                             <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
+                            <Flex style={{width:"100%",marginBottom: 20}}>
+                                <Text style={{marginRight:10}}>Show only actual dates</Text>
+                                <Switch onChange={hideAllPastDates}/>
+                            </Flex>
                             <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
                             <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
                         </>
