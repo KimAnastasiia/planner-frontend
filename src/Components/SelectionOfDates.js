@@ -12,6 +12,9 @@ let SelectionOfDates = () => {
     let [meetingData, setMeetingData] = useState()
     let [name, setName] = useState("")
     let [email, setEmail] = useState("")
+    let emailRef = useRef();
+    let nameRef = useRef();
+    let meetingDataRef = useRef();
     let [editButton, setEditButton] = useState(false)
     const { Title } = Typography;
     const idsRef = useRef([]);
@@ -22,6 +25,7 @@ let SelectionOfDates = () => {
     const [messageApi, contextHolder] = message.useMessage();
     const [isSmallScreen, setIsSmallScreen] = useState(false);
     const [datesForSelect, setDatesForSelect] =useState([])
+
     const handleResize = () => {
         setIsSmallScreen(window.innerWidth < 800); // Update isSmallScreen based on window width
     };
@@ -43,12 +47,17 @@ let SelectionOfDates = () => {
     }, [])
 
     useEffect(() => {
+        
+        emailRef.current = email
+        nameRef.current = name
+        meetingDataRef.current = meetingData
+       
         if (name && email && name != "" && email != "") {
             setDisableButton(false)
         } else {
             setDisableButton(true)
         }
-    }, [email, name])
+    }, [email, name, meetingData])
 
     let getVotes = async (meetingData) => {
 
@@ -157,9 +166,9 @@ let SelectionOfDates = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                userEmail: email,
-                name: name,
-                meetingId: meetingData.id,
+                userEmail: emailRef.current,
+                name: nameRef.current,
+                meetingId: meetingDataRef.current.id,
                 timesIds: arrayOfTimes,
                 userToken:token
             })
@@ -179,17 +188,16 @@ let SelectionOfDates = () => {
     }
     let addParticipation = async (time) => {
 
-
+        console.log("Email:"+emailRef.current)
         let response = await fetch(Commons.baseUrl + "/participation-public?voter_token="+localStorage.getItem("voter_token"), {
-
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                userEmail: email,
-                name: name,
-                meetingId: meetingData.id,
+                userEmail: emailRef.current,
+                name: nameRef.current,
+                meetingId: meetingDataRef.current.id,
                 time: {id: time},
                 userToken:token
             })
@@ -452,7 +460,9 @@ let SelectionOfDates = () => {
                             <Text style={{ fontWeight: 'bold'}}>Select your preferred hours</Text>
                             <Text style={{ marginBottom: 10 }}>We will notify you when the organizer chooses the best time</Text>
                             <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
-                            <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
+                            <Input value={email} type="email" onChange={(e) => { 
+                                setEmail(e.currentTarget.value) 
+                            }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
                         </>}
                         <Select
                             mode="multiple"
@@ -465,8 +475,10 @@ let SelectionOfDates = () => {
                             style={{width:"90%",marginBottom:10}}
                         />
                         <Flex style={{width:"100%",marginBottom: 20}}>
-                            <Text style={{marginRight:10}}>Show only actual dates</Text>
-                            <Switch onChange={hideAllPastDates}/>
+                            <Flex>
+                                <Text style={{marginRight:10}}>Show only actual dates</Text>
+                                <Switch onChange={hideAllPastDates}/>
+                            </Flex>
                         </Flex>
                         {renderDates()}
                     </Flex>
@@ -529,11 +541,15 @@ let SelectionOfDates = () => {
                             <Title level={2}>Select your preferred hours</Title>
                             <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
                             <Flex style={{width:"100%",marginBottom: 20}}>
-                                <Text style={{marginRight:10}}>Show only actual dates</Text>
-                                <Switch onChange={hideAllPastDates}/>
+                                <Flex>
+                                    <Text style={{marginRight:10}}>Show only actual dates</Text>
+                                    <Switch onChange={hideAllPastDates}/>
+                                </Flex>
                             </Flex>
                             <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
-                            <Input value={email} type="email" onChange={(e) => { setEmail(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
+                            <Input value={email} type="email" onChange={(e) => { 
+                                setEmail(e.currentTarget.value) 
+                            }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
                         </>
                     }
                     <Select
