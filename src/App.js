@@ -14,6 +14,7 @@ import DashboarComponent from "./Components/Dashboard";
 import VotesComponent from "./Components/Votes";
 import EditMeeting from "./Components/EditMeeting";
 import "./App.css"
+import ListOfInvitations from "./Components/ListOfInvitations";
 
 let App = () => {
 
@@ -85,6 +86,10 @@ let App = () => {
           <Route path="/edit/meeting/:meetingToken/:meetingId" element={
             <EditMeeting />
           }></Route>
+           <Route path="/allInvitations" element={
+            <ListOfInvitations />
+          }></Route>
+          
         </Routes>
       </Content>
 

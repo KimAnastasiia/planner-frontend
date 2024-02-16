@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, message, Flex, Input, Switch, Form, Calendar, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
+import { Button, message, Flex, Input, Switch, Calendar,Avatar, Divider, List, Skeleton, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
-
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import Commons from '../Utility/url';
 
 let CreateMeeting = () => {
-
+    const { Search } = Input;
     const { Title } = Typography;
     let navigate = useNavigate()
     const { token } = theme.useToken();
@@ -15,14 +15,16 @@ let CreateMeeting = () => {
         title: '',
         descriptions: '',
         location: '',
-        onlineConference: false
+        onlineConference: false,
+        private:false,
+        invited:[]
     });
     let indexTime = useRef(0)
     const [selectedDate, setSelectedDate] = useState([])
     const [defaultTime, setDefaultTime] = useState("")
     const [messageApi, contextHolder] = message.useMessage();
     const [sameTimeForAll, setSameTimeForAll] = useState(false)
-
+    const [actualInvited, setActualInvited]=useState("")
     useEffect(() => {
        if(sameTimeForAll){
             addDefaultTime()
@@ -31,7 +33,32 @@ let CreateMeeting = () => {
        }
     }, [sameTimeForAll,defaultTime, selectedDate.length]);
 
-
+    const isValidEmail=(email)=>{
+        // Regular expression for basic email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+    const addInvited=()=>{
+        if(isValidEmail(actualInvited)){
+            let copyOfInvatied=[...formData.invited]
+            let exist = copyOfInvatied.find((p)=>p==actualInvited)
+            if(!exist){
+                copyOfInvatied.push(actualInvited)
+                setFormData({
+                    ...formData,
+                    invited:copyOfInvatied
+                });
+                setActualInvited("")
+            }else{
+                invatedPersonAlreadyExistInList()
+            }
+        }else{
+            messageApi.open({
+                type: 'error',
+                content: "Invalid email format",
+            });
+        }
+    }
     let CreateNewMeeting = async () => {
 
         if(formData.title!=""&& (formData.location!="" || formData.onlineConference!=false) && selectedDate.length>0){
@@ -49,7 +76,12 @@ let CreateMeeting = () => {
             ...formData,
             dates: [...selectedDate]
         }
-
+        objToSent.invited=objToSent.invited.map((i)=>{
+            return {
+                email:i
+            }
+        })
+        console.log(objToSent)
         let response = await fetch(Commons.baseUrl +"/meetings?access_token=" + localStorage.getItem("access_token"), {
 
             method: "POST",
@@ -61,6 +93,14 @@ let CreateMeeting = () => {
         if (response.ok) {
             let data = await response.json()
             setSelectedDate([])
+            setFormData({
+                title: '',
+                descriptions: '',
+                location: '',
+                onlineConference: false,
+                private:false,
+                invited:[]
+            });
             navigate("/votes/" +data.token+"/"+data.meetingId)
             success()
         }else{
@@ -74,6 +114,14 @@ let CreateMeeting = () => {
           content: 'The meeting created successfully',
         });
     };
+    const invatedPersonAlreadyExistInList = () => {
+
+        messageApi.open({
+          type: 'error',
+          content: 'The person with this email is already on your invite list',
+        });
+
+    };
     const failed = () => {
         messageApi.open({
           type: "error",
@@ -86,10 +134,10 @@ let CreateMeeting = () => {
           content: 'Please enter data '+data,
         });
     };
-    const onChange = (checked) => {
+    const onChangeSwitchs = (name, checked) => {
         setFormData({
             ...formData,
-            onlineConference: checked
+            [name]:checked
         });
         console.log(checked)
     };
@@ -180,28 +228,90 @@ let CreateMeeting = () => {
         let currentDays = copyOfDays.filter((d) => d.date !== day)
         setSelectedDate(currentDays)
     }
+    const deleteEmailOfInvited=(email)=>{
+        let listOfInvited=[...formData.invited]
+        listOfInvited=listOfInvited.filter((e)=>e!=email)
+        setFormData({
+            ...formData,
+            invited: listOfInvited
+        });
+    }
     return (
         <Flex justify='center' style={{ width: "100%", minHeight: "100vh" }}>
             {contextHolder}
             <Flex vertical justify='center' align='center' style={{ minHeight: "100vh", backgroundColor: "white", padding: 50 }}>
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Create group poll</Title>
 
-                <Flex vertical >
+                <Flex justify="space-around">
+                    <Flex vertical>
+                        <Typography.Title level={5}>Title</Typography.Title>
+                        <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
 
-                    <Typography.Title level={5}>Title</Typography.Title>
-                    <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
+                        <Typography.Title level={5}>Description</Typography.Title>
+                        <Input value={formData.descriptions} onChange={(e) => { handleInputChange(e, "descriptions") }} />
 
-                    <Typography.Title level={5}>Description</Typography.Title>
-                    <Input value={formData.descriptions} onChange={(e) => { handleInputChange(e, "descriptions") }} />
+                        <Typography.Title level={5}>Location</Typography.Title>
+                        <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
 
-                    <Typography.Title level={5}>Location</Typography.Title>
-                    <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
-
-                    <Flex style={{ marginTop: 20 }}>
-                        <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
-                        <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={onChange} />
+                        <Flex style={{ marginTop: 20 }}>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
+                            <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("onlineConference", checked)}} />
+                        </Flex>
                     </Flex>
-
+                    <Flex vertical style={{marginLeft:30}}>
+                        <Flex align='center' justify='center'>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>
+                            <Switch style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
+                        </Flex>
+                        {formData.private&& 
+                        <Flex  style={{marginBottom:10}}>
+                            <Input value={actualInvited} onChange={(e)=>{setActualInvited(e.currentTarget.value)}} placeholder="Add emails of invited" />
+                            <Button onClick={addInvited}>Add</Button>
+                        </Flex>
+                        }
+                       
+                        {formData.private &&
+                        <div
+                            id="scrollableDiv"
+                            style={{
+                                height: 300,
+                                width:300,
+                                overflow: 'auto',
+                                padding: '0 16px',
+                                border: '1px solid rgba(140, 140, 140, 0.35)',
+                            }}
+                        >
+                            <InfiniteScroll
+                                dataLength={formData.invited.length}
+                            
+                                loader={
+                                <Skeleton
+                                    avatar
+                                    paragraph={{
+                                    rows: 1,
+                                    }}
+                                    active
+                                />
+                                }
+                                scrollableTarget="scrollableDiv"
+                            >
+                                <List
+                                    dataSource={formData.invited}
+                                    renderItem={(item) => (
+                                    <List.Item key={item}>
+                                        <List.Item.Meta
+                                        
+                                            title={<a href="https://ant.design">{item}</a>}
+                                        
+                                        />
+                                        <Button onClick={()=>{deleteEmailOfInvited(item)}} danger>Delete</Button>
+                                    </List.Item>
+                                     )}
+                                />
+                            </InfiniteScroll>
+                        </div>}
+                    </Flex>
+                 
                 </Flex>
 
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>

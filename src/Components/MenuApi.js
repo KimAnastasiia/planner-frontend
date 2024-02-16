@@ -36,10 +36,11 @@ let MenuApiComponent = () => {
           <Text level={4}>   {localStorage.getItem("email")}</Text>
         </Flex>
       </Flex>
-      <Flex vertical style={{ height: "70%", marginTop: 20 }}>
+      <Flex vertical justify="space-between" style={{ marginTop: 10 }}>
 
-        <Button onClick={()=>{navigate("/dashboard")}} style={{ marginBottom: 20 }} block>Dashboard</Button>
-        <Button block>Account Settings</Button>
+        <Button onClick={()=>{navigate("/dashboard")}} block>Dashboard</Button>
+        <Button block style={{marginTop:10, marginBottom:10}}>Account Settings</Button>
+        <Button onClick={()=>{navigate("/allInvitations")}} block>My invitations</Button>
 
       </Flex>
     </div>
