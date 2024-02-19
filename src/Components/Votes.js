@@ -42,7 +42,7 @@ let VotesComponent = () => {
 
     let getVotes = async () => {
 
-        let response = await fetch(Commons.baseUrl + `/participation/${meetingId}/${token}?access_token=${localStorage.getItem("access_token")}`)
+        let response = await fetch(Commons.baseUrl + `/participation/${meetingId}?access_token=${localStorage.getItem("access_token")}`)
         if (response.ok) {
             let data = await response.json()
             const result = data.reduce((acc, item) => {

@@ -15,6 +15,7 @@ import VotesComponent from "./Components/Votes";
 import EditMeeting from "./Components/EditMeeting";
 import "./App.css"
 import ListOfInvitations from "./Components/ListOfInvitations";
+import PrivateSelectionOfDates from "./Components/PrivateSelectionOfDates";
 
 let App = () => {
 
@@ -76,6 +77,9 @@ let App = () => {
           }></Route>
           <Route path="/participate/:token/:id" element={
             <SelectionOfDates  />
+          }></Route>
+          <Route path="/private-participate/:token/:id" element={
+            <PrivateSelectionOfDates  />
           }></Route>
           <Route path="/dashboard" element={
             <DashboarComponent />

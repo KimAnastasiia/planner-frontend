@@ -8,7 +8,7 @@ import Commons from '../Utility/url';
 const ListOfInvitations = () => {
   
     let [invitations, setInvitations] = useState([])
-   
+    let navigate = useNavigate()
 
     useEffect(() => {
         getInvitations()
@@ -32,7 +32,7 @@ const ListOfInvitations = () => {
           itemKey="email"
         >
           {(item) => (
-            <List.Item key={item.id}>
+            <List.Item key={item.id} onClick={()=>{navigate("/private-participate/" +item.meeting.token+"/"+item.meeting.id)}}>
               <List.Item.Meta
               
                 title={<a href="https://ant.design">{item.meeting.title}</a>}
