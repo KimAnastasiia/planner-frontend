@@ -113,18 +113,22 @@ let SelectionOfDates = () => {
         if (response.ok) {
             let data = await response.json()
             console.log(data)
-            setMeetingData(data[0])
-            let infoOfVotes = await getVotes(data[0])
-            createColumns(data[0], arrayOfDates, infoOfVotes)
-            let arrayInSelect=[]
 
-            data[0].dates.forEach((d)=>{
-                arrayInSelect.push({
-                    value:d.date,
-                    label:d.date
+            if(data.length>0){     
+                setMeetingData(data[0])
+                let infoOfVotes = await getVotes(data[0])
+                createColumns(data[0], arrayOfDates, infoOfVotes)
+                let arrayInSelect=[]
+
+                data[0].dates.forEach((d)=>{
+                    arrayInSelect.push({
+                        value:d.date,
+                        label:d.date
+                    })
                 })
-            })
-            setDatesForSelect(arrayInSelect)
+                setDatesForSelect(arrayInSelect)
+            }
+
         }
 
     }
@@ -419,51 +423,140 @@ let SelectionOfDates = () => {
         }else{
             getMeetingInfo()
         }
-    }
-    if(isSmallScreen){
+   }
+   if(meetingData?.private==false){
+        if(isSmallScreen){
+            return (
+                <Flex vertical align='center' justify='center' style={{ width: "100%" }}>
+                    {contextHolder}
+                    {voted && 
+                        <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10}}>
+                            <Text style={{ fontWeight: 'bold', marginBottom:5 }}><img src='/calendar.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />Reply sent!</Text>
+                            <Text >Now it depends on the organizer. We will send you an email to <Text style={{ fontWeight: 'bold' }}>{email}</Text> when will the selected final hour.</Text>
+                            <Flex align='center' style={{marginTop:10, marginBottom:10}}>
+
+                                <Switch style={{marginRight:10}} size="small" />
+                                <Text style={{marginRight:5}}>Receive event updates</Text>
+                                <Tooltip  color='#448BA7' placement="top" title={"We will send you an email when someone responds"}>
+                                    <img  src='/exclamation.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />
+                                </Tooltip>
+
+                            </Flex>
+                            <Button onClick={editAnswer}  style={{color:"gray", width:"50%"}}>Change your answer</Button>
+                        </Flex>
+                    }
+                    <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, height: "100%", padding: 10}}>
+                        <Flex align='center' vertical>
+                            <Flex style={{ borderBottom: "1px solid #D3DCE3", paddingBottom:5 }} align='center'>
+                                <Avatar size="small"icon={<UserOutlined />} style={{ marginRight: 5 }} />
+                                <Flex align='center' vertical>
+                                    <Text >{meetingData?.userEmail}</Text>
+                                </Flex>
+                            </Flex>
+                            <Flex vertical align="flex-start" justify="space-around" style={{ width: "100%", height: "30%"}}>
+                                <Title level={5}>{meetingData?.title}</Title>
+                                <Text ><img src='/left.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
+                                <Text ><img src='/pin.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
+                                <Text ><Checkbox style={{ marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                                <Text ><Checkbox style={{ marginRight: 10, marginBottom:10 }} checked={false}></Checkbox>No, i can not </Text>
+                            </Flex>
+                        {!voted && 
+                        <>
+                                <Text style={{ fontWeight: 'bold'}}>Select your preferred hours</Text>
+                                <Text style={{ marginBottom: 10 }}>We will notify you when the organizer chooses the best time</Text>
+                                <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
+                                <Input value={email} type="email" onChange={(e) => { 
+                                    setEmail(e.currentTarget.value) 
+                                }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
+                            </>}
+                            <Select
+                                mode="multiple"
+                                allowClear
+                                showSearch
+                                placeholder="Filter by days"
+                                optionFilterProp="children"
+                                options={datesForSelect}
+                                onChange={onChangeSelect}
+                                style={{width:"90%",marginBottom:10}}
+                            />
+                            <Flex style={{width:"100%",marginBottom: 20}}>
+                                <Flex>
+                                    <Text style={{marginRight:10}}>Show only actual dates</Text>
+                                    <Switch onChange={hideAllPastDates}/>
+                                </Flex>
+                            </Flex>
+                            {renderDates()}
+                        </Flex>
+                    </Flex>
+                </Flex>
+            )
+        }
+
         return (
-            <Flex vertical align='center' justify='center' style={{ width: "100%" }}>
+            <Flex vertical align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
                 {contextHolder}
                 {voted && 
-                    <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10}}>
-                        <Text style={{ fontWeight: 'bold', marginBottom:5 }}><img src='/calendar.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />Reply sent!</Text>
-                        <Text >Now it depends on the organizer. We will send you an email to <Text style={{ fontWeight: 'bold' }}>{email}</Text> when will the selected final hour.</Text>
-                        <Flex align='center' style={{marginTop:10, marginBottom:10}}>
+                        <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10, width:"66%"}}>
+                            <Text style={{  marginBottom:5, fontSize:25 }}><img src='/calendar.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />Reply sent!</Text>
+                            <Text >Now it depends on the organizer. We will send you an email to <Text style={{ fontWeight: 'bold' }}>{email}</Text> when will the selected final hour.</Text>
+                            <Flex justify="space-between" align='center' style={{marginTop:10, marginBottom:10}}>
 
-                            <Switch style={{marginRight:10}} size="small" />
-                            <Text style={{marginRight:5}}>Receive event updates</Text>
-                            <Tooltip  color='#448BA7' placement="top" title={"We will send you an email when someone responds"}>
-                                <img  src='/exclamation.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />
-                            </Tooltip>
+                                <Flex align='center'>
+                                    <Switch style={{marginRight:10}} size="small" />
+                                    <Text style={{marginRight:5}}>Receive event updates</Text>
+                                    <Tooltip  color='#448BA7' placement="top" title={"We will send you an email when someone responds"}>
+                                        <img  src='/exclamation.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />
+                                    </Tooltip>
+                                </Flex>
 
+                                <Button onClick={editAnswer} style={{color:"gray", width:"30%"}}>Change your answer</Button>
+                            </Flex>
+                        
                         </Flex>
-                        <Button onClick={editAnswer}  style={{color:"gray", width:"50%"}}>Change your answer</Button>
-                    </Flex>
-                }
-                <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, height: "100%", padding: 10}}>
-                    <Flex align='center' vertical>
-                        <Flex style={{ borderBottom: "1px solid #D3DCE3", paddingBottom:5 }} align='center'>
-                            <Avatar size="small"icon={<UserOutlined />} style={{ marginRight: 5 }} />
+                    }
+                <Flex style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, width:"100%" }}>
+                    <Flex align='center' vertical style={{ borderRight: "1px solid #D3DCE3", padding: 30, width:"30%" }}>
+
+                        <Flex style={{ borderBottom: "1px solid #D3DCE3", marginBottom:20 }} align='center'>
+                            <Avatar size="large" icon={<UserOutlined />} style={{ marginRight: 20 }} />
                             <Flex align='center' vertical>
-                                <Text >{meetingData?.userEmail}</Text>
+                                <Title level={5}>{meetingData?.userEmail}</Title>
+                                <Text>meeting organizer</Text>
                             </Flex>
                         </Flex>
-                        <Flex vertical align="flex-start" justify="space-around" style={{ width: "100%", height: "30%"}}>
-                            <Title level={5}>{meetingData?.title}</Title>
-                            <Text ><img src='/left.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
-                            <Text ><img src='/pin.png' style={{ height: 10, width: 10, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
-                            <Text ><Checkbox style={{ marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                            <Text ><Checkbox style={{ marginRight: 10, marginBottom:10 }} checked={false}></Checkbox>No, i can not </Text>
+
+                        <Flex align='center' style={{ width: "100%", height: "100%" }} vertical>
+
+
+
+                            <Flex vertical align="flex-start" justify="space-around" style={{ width: "100%", height: "30%" }}>
+                                <Title level={5}>{meetingData?.title}</Title>
+                                <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
+                                <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
+                                <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                                <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                            </Flex>
+
                         </Flex>
-                       {!voted && 
-                       <>
-                            <Text style={{ fontWeight: 'bold'}}>Select your preferred hours</Text>
-                            <Text style={{ marginBottom: 10 }}>We will notify you when the organizer chooses the best time</Text>
-                            <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 5 }} size="small" placeholder="Write your name" prefix={<UserOutlined />} />
-                            <Input value={email} type="email" onChange={(e) => { 
-                                setEmail(e.currentTarget.value) 
-                            }} style={{ marginBottom:10 }} size="small" placeholder="Write your email" prefix={<MailOutlined />} />
-                        </>}
+                    </Flex>
+
+                    <Flex align='center' vertical style={{ width: "60%", padding: 20 }}>
+                        {!voted && 
+                            <>
+                                <Title level={2}>Select your preferred hours</Title>
+                                <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
+                                <Flex style={{width:"100%",marginBottom: 20}}>
+                                    <Flex>
+                                        <Text style={{marginRight:10}}>Show only actual dates</Text>
+                                        <Switch onChange={hideAllPastDates}/>
+                                    </Flex>
+                                </Flex>
+                                <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
+                                <Input value={email} type="email" onChange={(e) => { 
+                                    setEmail(e.currentTarget.value) 
+                                }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
+                            </>
+                        }
                         <Select
                             mode="multiple"
                             allowClear
@@ -472,101 +565,21 @@ let SelectionOfDates = () => {
                             optionFilterProp="children"
                             options={datesForSelect}
                             onChange={onChangeSelect}
-                            style={{width:"90%",marginBottom:10}}
+                            style={{width:"30%", marginBottom:10}}
                         />
-                        <Flex style={{width:"100%",marginBottom: 20}}>
-                            <Flex>
-                                <Text style={{marginRight:10}}>Show only actual dates</Text>
-                                <Switch onChange={hideAllPastDates}/>
-                            </Flex>
-                        </Flex>
                         {renderDates()}
                     </Flex>
                 </Flex>
             </Flex>
         )
-    }
-
-    return (
-        <Flex vertical align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
-              {contextHolder}
-              {voted && 
-                    <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10, width:"66%"}}>
-                        <Text style={{  marginBottom:5, fontSize:25 }}><img src='/calendar.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />Reply sent!</Text>
-                        <Text >Now it depends on the organizer. We will send you an email to <Text style={{ fontWeight: 'bold' }}>{email}</Text> when will the selected final hour.</Text>
-                        <Flex justify="space-between" align='center' style={{marginTop:10, marginBottom:10}}>
-
-                            <Flex align='center'>
-                                <Switch style={{marginRight:10}} size="small" />
-                                <Text style={{marginRight:5}}>Receive event updates</Text>
-                                <Tooltip  color='#448BA7' placement="top" title={"We will send you an email when someone responds"}>
-                                    <img  src='/exclamation.png' style={{ height: 20, width: 20, marginRight: 5 }} alt='location Icon' />
-                                </Tooltip>
-                            </Flex>
-
-                            <Button onClick={editAnswer} style={{color:"gray", width:"30%"}}>Change your answer</Button>
-                        </Flex>
-                       
-                    </Flex>
-                }
-            <Flex style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, width:"100%" }}>
-                <Flex align='center' vertical style={{ borderRight: "1px solid #D3DCE3", padding: 30, width:"30%" }}>
-
-                    <Flex style={{ borderBottom: "1px solid #D3DCE3", marginBottom:20 }} align='center'>
-                        <Avatar size="large" icon={<UserOutlined />} style={{ marginRight: 20 }} />
-                        <Flex align='center' vertical>
-                            <Title level={5}>{meetingData?.userEmail}</Title>
-                            <Text>meeting organizer</Text>
-                        </Flex>
-                    </Flex>
-
-                    <Flex align='center' style={{ width: "100%", height: "100%" }} vertical>
-
-
-
-                        <Flex vertical align="flex-start" justify="space-around" style={{ width: "100%", height: "30%" }}>
-                            <Title level={5}>{meetingData?.title}</Title>
-                            <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
-                            <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
-                            <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                            <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
-                        </Flex>
-
-                    </Flex>
-                </Flex>
-
-                <Flex align='center' vertical style={{ width: "60%", padding: 20 }}>
-                    {!voted && 
-                        <>
-                            <Title level={2}>Select your preferred hours</Title>
-                            <Text style={{ marginBottom: 20 }}>We will notify you when the organizer chooses the best time</Text>
-                            <Flex style={{width:"100%",marginBottom: 20}}>
-                                <Flex>
-                                    <Text style={{marginRight:10}}>Show only actual dates</Text>
-                                    <Switch onChange={hideAllPastDates}/>
-                                </Flex>
-                            </Flex>
-                            <Input value={name} onChange={(e) => { setName(e.currentTarget.value) }} style={{ marginBottom: 20 }} size="large" placeholder="Write your name" prefix={<UserOutlined />} />
-                            <Input value={email} type="email" onChange={(e) => { 
-                                setEmail(e.currentTarget.value) 
-                            }} style={{ marginBottom: 20 }} size="large" placeholder="Write your email" prefix={<MailOutlined />} />
-                        </>
-                    }
-                    <Select
-                        mode="multiple"
-                        allowClear
-                        showSearch
-                        placeholder="Filter by days"
-                        optionFilterProp="children"
-                        options={datesForSelect}
-                        onChange={onChangeSelect}
-                        style={{width:"30%", marginBottom:10}}
-                    />
-                    {renderDates()}
-                </Flex>
+    }else{
+        return (
+            <Flex vertical justify='center' align='center' style={{width:"100%", height:"100vh"}}>
+              <img src='/empty-box.png' style={{ height: 150, width: 150 }} alt='no data Icon' />
+              <Text > No data :( </Text>
             </Flex>
-        </Flex>
-    )
+        )
+    }
 
 
 }

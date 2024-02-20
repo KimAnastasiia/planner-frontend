@@ -282,7 +282,7 @@ let VotesComponent = () => {
                     <Flex >
                         <Button >Preview</Button>
                         <Button style={{marginLeft:5, marginRight:5}} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
-                        <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>
+                        {!meetingData?.private&&<Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
                     </Flex>
                     <Text style={{marginTop:10 }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
                     <Flex style={{justifyContent:"center", marginTop:10}}>
@@ -325,7 +325,7 @@ let VotesComponent = () => {
                         <Flex align='center' justify='center'>
                             <Button >Preview</Button>
                             <Button style={{ marginLeft: 20, marginRight:20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
-                            <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>
+                            {!meetingData?.private&&<Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
                         </Flex>
                     </Flex>
                     <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
