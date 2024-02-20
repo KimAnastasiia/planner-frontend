@@ -14,7 +14,14 @@ let DashboarComponent = () => {
     useEffect(() => {
         getmeetings()
     }, [])
+    
+    let deleteMeeting=async(id, token)=>{
 
+        let response = await fetch(Commons.baseUrl + `/meetings/${id}/${token}?access_token=`+ localStorage.getItem("access_token"), {
+            method: 'DELETE'
+        })
+        
+    }
     let getmeetings = async () => {
 
         let response = await fetch(Commons.baseUrl + "/meetings/list?access_token=" + localStorage.getItem("access_token"))
@@ -52,10 +59,10 @@ let DashboarComponent = () => {
                                 <Text style={{ fontWeight: 'bold', color: "gray", marginLeft: 5, marginRight: 5 }}>{m.dates?.length}</Text>
                                 <Text style={{ fontWeight: 'bold', color: "gray" }}>options</Text>
                             </Flex>
-
+                            {m.private &&<Text style={{ fontWeight: 'bold', color: "gray" }}>private</Text>}
                         </Flex>
                         <Flex style={{ width: "20%" }}>
-                            <Button type="dashed" danger>delete</Button>
+                            <Button onClick={()=>{deleteMeeting(m.id, m.token)}} type="dashed" danger>delete</Button>
                         </Flex>
                     </Flex>)}
             </Flex>
