@@ -1,5 +1,5 @@
 
-import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate , useNavigate, useLocation } from "react-router-dom";
 import "antd/dist/reset.css"
 import { Layout, notification } from "antd"
 import { useEffect, useState } from "react";
@@ -93,7 +93,7 @@ let App = () => {
            <Route path="/allInvitations" element={
             <ListOfInvitations />
           }></Route>
-          
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
       </Content>
 

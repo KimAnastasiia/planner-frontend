@@ -30,32 +30,29 @@ let EditMeeting = () => {
         getMeetingInfo()
     }, [])
 
-    let deleteDateFromBK=async(dateId)=>{
-        let response = await fetch(Commons.baseUrl + `/dates/${dateId}?access_token=`+ localStorage.getItem("access_token"), {
-            method: 'DELETE'
-          })
-          if (response.ok) {
-          }
-    }
-
     let getMeetingInfo = async () => {
         let response = await fetch(Commons.baseUrl +  `/meetings?meetingId=${meetingId}&token=${meetingToken}&access_token=${localStorage.getItem("access_token")}`)
         if (response.ok) {
             let data = await response.json()
-            let recreatedInvitedListOnlyEmails=[]
-            data[0].invited.forEach(iData => {
-                recreatedInvitedListOnlyEmails.push(iData.email)
-            });
-            data[0].invited=recreatedInvitedListOnlyEmails
-            console.log(data)
-            setFormData(data[0])
-            let newAr =[]
+            if(data.length>0){
+                if(data[0].invited.length>0) { 
+                    let recreatedInvitedListOnlyEmails=[]
+                    data[0].invited?.forEach(iData => {
+                        recreatedInvitedListOnlyEmails.push(iData.email)
+                    });
+                    data[0].invited=recreatedInvitedListOnlyEmails
+                }
 
-            data[0]?.dates?.map((d)=>
-                newAr.push(d)
-            )
-            console.log(newAr)
-            setSelectedDate(newAr)
+                console.log(data)
+                setFormData(data[0])
+                let newAr =[]
+
+                data[0]?.dates?.map((d)=>
+                    newAr.push(d)
+                )
+                console.log(newAr)
+                setSelectedDate(newAr)
+            }
         }
 
     }
@@ -65,7 +62,7 @@ let EditMeeting = () => {
             dates:[...selectedDate]
         }
         if(objToSent.private){
-            objToSent.invited=objToSent.invited.map((i)=>{
+            objToSent.invited=objToSent.invited?.map((i)=>{
                 return {
                     email:i
                 }
