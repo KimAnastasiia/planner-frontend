@@ -80,6 +80,17 @@ let EditMeeting = () => {
         })
         if (response.ok) {
            
+            messageApi.open({
+                type: 'success',
+                content: 'You have successfully edited the data.',
+            });
+           
+        }else{
+
+            messageApi.open({
+                type: "error",
+                content: "Make sure you entered all the data correctly or try again later",
+            });
         }
 
     }

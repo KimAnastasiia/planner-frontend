@@ -38,7 +38,7 @@ let DashboarComponent = () => {
             <Flex vertical style={{ width: "700px", backgroundColor: "white", padding: "30px" }}>
                 <Flex justify="flex-end" style={{width:"100%", marginBottom:20}}>
                     <Search
-                        onChange={(e)=>{setSearch(e.target.value)}}
+                        onChange={(e)=>{setSearch(e.target.value.toUpperCase())}}
                         style={{
                             width: 200
                         }}
@@ -46,7 +46,7 @@ let DashboarComponent = () => {
                 </Flex>
                 
                 {meetings.filter((meeting)=>{
-                return meeting.title.includes(search)
+                return meeting.title.toUpperCase().includes(search)
             }).map((m) =>
                     <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom:20 }}>
                         <Flex style={{ width: "10%" }}>
