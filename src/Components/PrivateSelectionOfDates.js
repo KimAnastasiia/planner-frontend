@@ -13,11 +13,9 @@ let PrivateSelectionOfDates = () => {
     let [name, setName] = useState("")
     let nameRef = useRef();
     let meetingDataRef = useRef();
-    let [editButton, setEditButton] = useState(false)
     const { Title } = Typography;
     const idsRef = useRef([]);
     let [votes, setVotes] = useState([])
-    let [disableButton, setDisableButton] = useState(true)
     let [voted, setVoted]=useState(false)
     let [columnsArray, setColumnsArray] = useState([])
     const [messageApi, contextHolder] = message.useMessage();
@@ -47,12 +45,6 @@ let PrivateSelectionOfDates = () => {
     useEffect(() => {
         nameRef.current = name
         meetingDataRef.current = meetingData
-       
-        if (name && name != "" ) {
-            setDisableButton(false)
-        } else {
-            setDisableButton(true)
-        }
     }, [ name, meetingData])
 
     let getVotes = async (meetingData) => {
@@ -61,7 +53,7 @@ let PrivateSelectionOfDates = () => {
         if (response.ok) {
             let data = await response.json()
             data.map((el)=>{
-                if(el.token==localStorage.getItem("voter_token")){
+                if(el.userEmail==localStorage.getItem("email")){
                     setName(el.name)
                     setVoted(true)
                     el.name="You"
@@ -174,12 +166,7 @@ let PrivateSelectionOfDates = () => {
             method: 'DELETE'
         })
     }
-    const success = () => {
-        messageApi.open({
-          type: 'success',
-          content: 'You have successfully selected the appropriate dates',
-        });
-      };
+
     let checkBoxChange = (e, timeId) => {
 
         if(name!="" || nameRef.current!=""){ 
@@ -257,7 +244,8 @@ let PrivateSelectionOfDates = () => {
 
                                 dataIndex: t.id,
                                 key: t.id,
-                                render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox disabled={name==""}  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                                render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox disabled={(name === "" && nameRef.current === "") || (infoOfVotes?.find((v) => v.timeId === timeId && meetingDataRef.current.oneToOne === true && !idsRef.current.find((id) => id === timeId)))}
+                                defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
                             })
 
 
@@ -303,7 +291,7 @@ let PrivateSelectionOfDates = () => {
 
                             dataIndex: t.id,
                             key: t.id,
-                            render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox disabled={name=="" && nameRef.current==""}  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                            render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  disabled={(name === "" && nameRef.current === "") || (infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId)))} defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
                         })
                     
                 })
@@ -356,8 +344,6 @@ let PrivateSelectionOfDates = () => {
             d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
         })
         temp.push(objetPutYourChoose)
-
-        setEditButton(true)
         setVoted(false)
         setVotes(temp)
 
