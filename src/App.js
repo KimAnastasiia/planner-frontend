@@ -16,6 +16,7 @@ import EditMeeting from "./Components/EditMeeting";
 import "./App.css"
 import ListOfInvitations from "./Components/ListOfInvitations";
 import PrivateSelectionOfDates from "./Components/PrivateSelectionOfDates";
+import AccounSettings from "./Components/AccounSettings";
 
 let App = () => {
 
@@ -90,8 +91,11 @@ let App = () => {
           <Route path="/edit/meeting/:meetingToken/:meetingId" element={
             <EditMeeting />
           }></Route>
-           <Route path="/allInvitations" element={
+          <Route path="/allInvitations" element={
             <ListOfInvitations />
+          }></Route>
+          <Route path="/account" element={
+            <AccounSettings />
           }></Route>
           <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
