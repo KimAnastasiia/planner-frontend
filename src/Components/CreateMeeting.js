@@ -17,7 +17,8 @@ let CreateMeeting = () => {
         location: '',
         onlineConference: false,
         private:false,
-        invited:[]
+        invited:[],
+        oneToOne:false
     });
     let indexTime = useRef(0)
     const [selectedDate, setSelectedDate] = useState([])
@@ -256,6 +257,11 @@ let CreateMeeting = () => {
                         <Flex style={{ marginTop: 20 }}>
                             <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
                             <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("onlineConference", checked)}} />
+                        </Flex>
+
+                        <Flex style={{ marginTop: 20 }}>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>1:1</Typography.Title>
+                            <Switch value={formData.oneToOne} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("oneToOne", checked)}} />
                         </Flex>
                     </Flex>
                     <Flex vertical style={{marginLeft:30}}>
