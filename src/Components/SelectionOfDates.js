@@ -305,12 +305,13 @@ let SelectionOfDates = () => {
 
                                 dataIndex: t.id,
                                 key: t.id,
-                                render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox disabled={infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))} defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                                render: (timeId) => (timeId == "x" || !timeId ? timeId : ( !(infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))) && <Checkbox disabled={infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))} defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>)),
                             })
 
 
 
                         }
+                        
 
                     )}
                 })
@@ -351,7 +352,7 @@ let SelectionOfDates = () => {
 
                             dataIndex: t.id,
                             key: t.id,
-                            render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox disabled={infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne&& !idsRef.current.find((id)=>id==timeId) )} defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                            render: (timeId) => (timeId == "x" || !timeId ? timeId : (!(infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))) &&<Checkbox defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>)),
                         })
                     
                 })
@@ -378,7 +379,6 @@ let SelectionOfDates = () => {
                     //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
-                {editButton && <Button disabled={disableButton} onClick={putParticipation} type="primary" style={{ width: "100%" }}>Edit</Button>}
             </div>
         )
     }
