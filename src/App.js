@@ -79,6 +79,9 @@ let App = () => {
           <Route path="/participate/:token/:id" element={
             <SelectionOfDates  />
           }></Route>
+          <Route path="/participate/:token/:id/:voterToken" element={
+            <SelectionOfDates  />
+          }></Route>
           <Route path="/private-participate/:token/:id" element={
             <PrivateSelectionOfDates  />
           }></Route>

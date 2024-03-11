@@ -9,6 +9,7 @@ let SelectionOfDates = () => {
     const { Text } = Typography;
     const { id } = useParams()
     const { token } = useParams()
+    const { voterToken } = useParams()
     let [meetingData, setMeetingData] = useState()
     let [name, setName] = useState("")
     let [email, setEmail] = useState("")
@@ -41,8 +42,10 @@ let SelectionOfDates = () => {
         };
     }, [window.innerWidth]);
 
-  
     useEffect(() => {
+        if(voterToken){
+            localStorage.setItem('voter_token', voterToken);
+        }
         getMeetingInfo()
     }, [])
 
