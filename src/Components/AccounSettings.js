@@ -62,16 +62,19 @@ let AccounSettings = () => {
         <Flex justify='center' style={{height:"40vh"}} >
             {contextHolder}
             <Flex justify="space-around" style={{backgroundColor:"white", minWidth:"30%", padding:20,borderRadius:12}} vertical>
-                <Flex align='center' style={{borderBottom: "1px solid #D3DCE3",height:"25%"}} justify="flex-start">
-                    <Text>Profile</Text>
+                <Flex vertical style={{borderBottom: "1px solid #D3DCE3",height:"25%"}} justify="flex-start">
+                    <Flex align='center'style={{height:"50%"}} >
+                        <Text style={{marginRight:10}}>Profile</Text>
+                        <Avatar icon={<UserOutlined />}></Avatar>
+                    </Flex>
+                    <Flex style={{height:"50%"}}>
+                        <Text>{user.email}</Text>
+                    </Flex>
+                    
                 </Flex>
                 <Flex align='center' style={{borderBottom: "1px solid #D3DCE3",height:"25%" }} justify="space-between">
-                    <Avatar icon={<UserOutlined />}></Avatar>
+                    <Text>Name</Text>
                     <Input onChange={(e)=>{setUser({...user, name:e.target.value})}} style={{width:"50%"}} value={user.name}></Input>
-                </Flex>
-                <Flex align='center' justify="space-between" style={{borderBottom: "1px solid #D3DCE3",height:"25%"}}>
-                    <Text>Email</Text>
-                    <Text>{user.email}</Text>
                 </Flex>
                 <Flex align='center' justify="space-between" style={{height:"25%"}}>
                     <Text>Password</Text>

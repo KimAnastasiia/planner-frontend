@@ -288,8 +288,12 @@ let VotesComponent = () => {
                     <Flex style={{justifyContent:"center", marginTop:10}}>
                         <Text style={{ fontWeight: 'bold', fontSize:15 }}>Availabilities</Text>
                     </Flex>
-                    <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                    <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                    <Flex vertical>
+                        <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
+                        <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
+                        <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                        <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                    </Flex>
                 </Flex>
                 <Flex align='center' vertical style={{ width: "100%", minHeight: "60%", padding: 20 }}>
                     <Select
@@ -310,7 +314,7 @@ let VotesComponent = () => {
     }
     return (
         <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
-                <Flex vertical style={{  border: "1px solid #D3DCE3",backgroundColor: "white",borderRadius: 10,padding:20}}>
+                <Flex vertical style={{  border: "1px solid #D3DCE3",backgroundColor: "white",borderRadius: 10,padding:20, width:"60%"}}>
                     <Flex style={{ borderBottom: "1px solid #D3DCE3"}}>
 
                         <Flex justify="space-between" vertical style={{ width: "70%" }}>

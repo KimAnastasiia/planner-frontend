@@ -104,7 +104,7 @@ let App = () => {
         </Routes>
       </Content>
 
-      <Footer style={{ textAlign: "center" }}> My Website</Footer>
+      <Footer style={{ textAlign: "center" }}> MeetFlow Planner</Footer>
 
     </Layout>
   );
