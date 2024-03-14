@@ -20,6 +20,9 @@ let DashboarComponent = () => {
         let response = await fetch(Commons.baseUrl + `/meetings/${id}/${token}?access_token=`+ localStorage.getItem("access_token"), {
             method: 'DELETE'
         })
+        if(response.ok){
+            getmeetings()
+        }
         
     }
     let getmeetings = async () => {
@@ -48,11 +51,11 @@ let DashboarComponent = () => {
                 {meetings.filter((meeting)=>{
                 return meeting.title.toUpperCase().includes(search)
             }).map((m) =>
-                    <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom:20 }}>
-                        <Flex style={{ width: "10%" }}>
+                    <Flex align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom:20 }}>
+                        <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} style={{ width: "10%" }}>
                             <Avatar icon={<UserOutlined />} />
                         </Flex>
-                        <Flex justify='center' vertical style={{ width: "70%", height: "100%" }}>
+                        <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} justify='center' vertical style={{ width: "70%", height: "100%" }}>
                             <Title style={{ margin: 0, fontWeight: 'bold' }} level={4}>{m.title}</Title>
                             <Flex align='center'>
                                 <CalendarOutlined style={{ fontSize: 20 }} />

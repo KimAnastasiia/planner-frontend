@@ -212,10 +212,10 @@ let EditMeeting = () => {
     return (
         <Flex justify='center' style={{ width: "100%", minHeight: "100vh" }}>
             {contextHolder}
-            <Flex vertical justify='center' align='center' style={{ width: "70%", minHeight: "100vh", backgroundColor: "white", padding: 50 }}>
-                <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Create group poll</Title>
+            <Flex vertical justify='center' align='center' style={{ minHeight: "100vh", backgroundColor: "white", padding: 20, margin:5 }}>
+                <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Edit</Title>
 
-                <Flex>
+                <Flex vertical>
                     <Flex vertical style={{ width: "400px" }}>
                         <Typography.Title level={5}>Title</Typography.Title>
                         <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
@@ -226,16 +226,12 @@ let EditMeeting = () => {
                         <Typography.Title level={5}>Location</Typography.Title>
                         <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
 
-                        <Flex style={{ marginTop: 20 }}>
-                            <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
-                            <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={onChange} />
-                        </Flex>
-                    </Flex>
-                    <Flex vertical style={{marginLeft:30}}>
-                        <Flex align='center' justify='center'>
-                            <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>
-                            <Switch style={{ width: "30px" }} value={formData.private} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
-                        </Flex>
+                    
+                        <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
+                        <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={onChange} />
+                        <Typography.Title level={5} >Private meeting</Typography.Title>
+                        <Switch style={{ width: "30px", marginBottom:20 }} value={formData.private} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
+                
                         {formData.private&& 
                         <Flex  style={{marginBottom:10}}>
                             <Input value={actualInvited} onChange={(e)=>{setActualInvited(e.currentTarget.value)}} placeholder="Add emails of invited" />
@@ -288,10 +284,7 @@ let EditMeeting = () => {
 
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>
 
-                <Flex justify="space-around" style={{ width: "100%" }}>
-
-
-
+                <Flex vertical justify='center' style={{ width: "100%" }}>
                     <div style={wrapperStyle}>
                         <Typography.Title style={{ margin: 10 }} level={4}>Date</Typography.Title>
                         <Calendar

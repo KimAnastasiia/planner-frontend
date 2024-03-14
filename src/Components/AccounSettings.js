@@ -59,9 +59,9 @@ let AccounSettings = () => {
         });
     };
     return(
-        <Flex justify='center' style={{height:"40vh"}} >
+        <Flex justify='center' style={{height:"30vh"}} >
             {contextHolder}
-            <Flex justify="space-around" style={{backgroundColor:"white", minWidth:"30%", padding:20,borderRadius:12}} vertical>
+            <Flex justify="space-around" style={{backgroundColor:"white", minWidth:"30%", padding:20,borderRadius:12, height:"100%"}} vertical>
                 <Flex vertical style={{borderBottom: "1px solid #D3DCE3",height:"25%"}} justify="flex-start">
                     <Flex align='center'style={{height:"50%"}} >
                         <Text style={{marginRight:10}}>Profile</Text>
@@ -75,10 +75,6 @@ let AccounSettings = () => {
                 <Flex align='center' style={{borderBottom: "1px solid #D3DCE3",height:"25%" }} justify="space-between">
                     <Text>Name</Text>
                     <Input onChange={(e)=>{setUser({...user, name:e.target.value})}} style={{width:"50%"}} value={user.name}></Input>
-                </Flex>
-                <Flex align='center' justify="space-between" style={{height:"25%"}}>
-                    <Text>Password</Text>
-                    <Input style={{width:"50%"}} onChange={(e)=>{setUser({...user, password:e.target.value})}}  value={user.password}></Input>
                 </Flex>
                 <Button onClick={updateData} type="primary">Save</Button>
             </Flex>

@@ -243,8 +243,8 @@ let CreateMeeting = () => {
             <Flex vertical justify='center' align='center' style={{ minHeight: "100vh", backgroundColor: "white", padding: 50 }}>
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Create group poll</Title>
 
-                <Flex justify="space-around">
-                    <Flex vertical>
+                <Flex vertical justify="space-around">
+               
                         <Typography.Title level={5}>Title</Typography.Title>
                         <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
 
@@ -263,11 +263,9 @@ let CreateMeeting = () => {
                             <Typography.Title level={5} style={{ marginRight: 20 }}>1:1</Typography.Title>
                             <Switch value={formData.oneToOne} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("oneToOne", checked)}} />
                         </Flex>
-                    </Flex>
-                    <Flex vertical style={{marginLeft:30}}>
-                        <Flex align='center' justify='center'>
+                        <Flex>
                             <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>
-                            <Switch style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
+                            <Switch style={{ width: "30px"}} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
                         </Flex>
                         {formData.private&& 
                         <Flex  style={{marginBottom:10}}>
@@ -316,13 +314,13 @@ let CreateMeeting = () => {
                                 />
                             </InfiniteScroll>
                         </div>}
-                    </Flex>
+                 
                  
                 </Flex>
 
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>
 
-                <Flex justify="space-around" style={{ width: "100%" }}>
+                <Flex  vertical justify="space-around" style={{ width: "100%" }}>
 
 
 
@@ -361,7 +359,7 @@ let CreateMeeting = () => {
                                 return (
                                     <div
                                         style={{
-                                            padding: 8,
+                                            padding: 8
                                         }}
                                     >
 
@@ -413,7 +411,7 @@ let CreateMeeting = () => {
                     </div>
                     <div>
                        {selectedDate.length>0&&
-                        <Flex vertical align='center'>
+                        <Flex vertical align='center' style={{marginTop:20}}>
                             <Flex>
                                 <Typography.Title level={5} style={{ marginRight: 20 }}>Add same time to all dates</Typography.Title>
                                 <Switch value={sameTimeForAll} onChange={()=>{setSameTimeForAll(!sameTimeForAll)}} style={{ width: "30px" }} />

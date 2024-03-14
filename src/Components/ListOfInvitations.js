@@ -23,25 +23,37 @@ const ListOfInvitations = () => {
         }
 
     }
+    let deleteInvitation=async(meetingId)=>{
+      let response = await fetch(Commons.baseUrl + `/invited/${meetingId}?access_token=`+ localStorage.getItem("access_token"), {
+          method: 'DELETE'
+      })
+      if(response.ok){
+        getInvitations()
+      }
+      
+  }
     return (
       <Flex vertical align='center' style={{ height:"100vh", width:"100%"}}>
         <List style={{backgroundColor:"white", minWidth:"90%", padding:20}}>
+
+         {invitations.length>0 &&
           <VirtualList
             data={invitations}
             itemHeight={47}
             itemKey="email"
           >
             {(item) => (
-              <List.Item key={item.id} onClick={()=>{navigate("/private-participate/" +item.meeting.token+"/"+item.meeting.id)}}>
+              <List.Item key={item.id} >
                 <List.Item.Meta
-                
+                  onClick={()=>{navigate("/private-participate/" +item.meeting.token+"/"+item.meeting.id)}}
                   title={  <Title style={{ margin: 0, fontWeight: 'bold' }} level={4}>{item.meeting.title}</Title>}
                   description={ <Text style={{ fontWeight: 'bold', color: "gray" }}>{item.meeting.userEmail}</Text>}
                 />
-                  <Button  type="dashed" danger>delete</Button>
+                  <Button onClick={()=>{deleteInvitation(item.meeting.id)}} danger>delete</Button>
               </List.Item>
             )}
-          </VirtualList>
+          </VirtualList>}
+
       </List>
       </Flex>
     )
