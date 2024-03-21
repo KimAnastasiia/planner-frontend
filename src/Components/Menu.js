@@ -11,7 +11,7 @@ let MenuComponent = () => {
     <Flex justify="space-between" align='center' style={{ height:"100%", width:"90%"}} >
       <Flex  align='center' style={{textAlign:"center", height:"100%"}}>
         <CalendarOutlined style={{fontSize: '35px', marginRight:10}}/>
-        <h2>MeetFlow Planner</h2>
+        <h2>MeetFlow</h2>
       </Flex>
       <Flex>
 

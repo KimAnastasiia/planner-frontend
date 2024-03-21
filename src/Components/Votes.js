@@ -273,15 +273,14 @@ let VotesComponent = () => {
     }
     if (isSmallScreen) {
         return(
-        <Flex style={{ height: "100vh", width: "100%" }}>
-            <Flex vertical style={{ border: "1px solid #D3DCE3", height: "100vh", backgroundColor: "white",width:"100%", borderRadius: 10 }}>
+        <Flex style={{ minHeight: "100vh", width: "100%" }}>
+            <Flex vertical style={{ border: "1px solid #D3DCE3", minHeight: "100vh", backgroundColor: "white",width:"100%", borderRadius: 10 }}>
                 <Flex vertical style={{ borderBottom: "1px solid #D3DCE3", height: "40%", padding:10, justifyContent:"space-around" }}>
                     <Flex style={{justifyContent:"center"}}>
                         <Title level={2}>{meetingData?.title}</Title>
                     </Flex>
-                    <Flex >
-                        <Button >Preview</Button>
-                        <Button style={{marginLeft:5, marginRight:5}} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
+                    <Flex>
+                        <Button type='primary' style={{marginLeft:5, marginRight:5}} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
                         {!meetingData?.private&&<Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
                     </Flex>
                     <Text style={{marginTop:10 }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
@@ -326,9 +325,9 @@ let VotesComponent = () => {
                             <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
                             <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
                         </Flex>
-                        <Flex align='center' justify='center'>
-                            <Button >Preview</Button>
-                            <Button style={{ marginLeft: 20, marginRight:20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
+                        <Flex align='center'>
+                           
+                            <Button type='primary' style={{ marginLeft: 20, marginRight:20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
                             {!meetingData?.private&&<Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
                         </Flex>
                     </Flex>

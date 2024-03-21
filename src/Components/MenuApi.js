@@ -24,8 +24,12 @@ let MenuApiComponent = () => {
       pointAtCenter: true,
     };
   }, [arrow]);
+  let disconnect = async () => {
+    localStorage.removeItem("access_token");
+    navigate("/login")
+  }
   const content = (
-    <div style={{ width: 300, height: 170 }}>
+    <div style={{ width: 300, height: 250 }}>
       <Flex align='center' style={{ height: "30%", width: "100%", borderBottom: "1px solid #D3DCE3" }}>
         <div>
           <Avatar size="large" style={{ margin: 20 }} icon={<UserOutlined />} />
@@ -41,19 +45,16 @@ let MenuApiComponent = () => {
         <Button onClick={()=>{navigate("/dashboard")}} block>Dashboard</Button>
         <Button onClick={()=>{navigate("/account")}} block style={{marginTop:10, marginBottom:10}}>Account Settings</Button>
         <Button onClick={()=>{navigate("/allInvitations")}} block>My invitations</Button>
-
+        <Button danger onClick={disconnect} block style={{marginTop:10, marginBottom:10}}>Log out</Button>
       </Flex>
     </div>
   );
-  let disconnect = async () => {
-    localStorage.removeItem("access_token");
-    navigate("/login")
-  }
+
   return (
     <Flex justify="space-between" align='center' style={{ height: "100%", width: "90%" }} >
       <Flex  style={{ textAlign: "center", height: "100%" }}>
         <CalendarOutlined style={{ fontSize: '35px', marginRight: 10 }} />
-        <h2>MeetFlow Planner</h2>
+        <h2>MeetFlow</h2>
       </Flex>
       <Flex>
 
@@ -69,9 +70,7 @@ let MenuApiComponent = () => {
         <Button onClick={() => { navigate("/createMeeting") }} type="primary" shape="round" size={size} style={{ backgroundColor: "#9D7D6F", marginLeft: 10 }}>
           + Crear
         </Button>
-        <Button onClick={disconnect} type="dashed" shape="round" size={size} style={{ marginLeft: 10 }}>
-          Exit
-        </Button>
+       
       </Flex>
     </Flex>
   );

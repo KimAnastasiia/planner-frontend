@@ -12,7 +12,14 @@ const Login = () => {
     let [password, setPassword] = useState(false);
     let navigate = useNavigate()
     const [messageApi, contextHolder] = message.useMessage();
-
+    
+    useEffect(() => {
+        if(!localStorage.getItem("access_token")){
+            
+            localStorage.removeItem("access_token");
+            navigate("/login")
+        }
+     }, []);
     let verificateUser = async () => {
 
         let response = await fetch(Commons.baseUrl+"/users/verification", {

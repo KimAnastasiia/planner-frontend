@@ -30,7 +30,11 @@ let SelectionOfDates = () => {
     const handleResize = () => {
         setIsSmallScreen(window.innerWidth < 800); // Update isSmallScreen based on window width
     };
-
+    const numberOfVotersPerWindow = (arraySelectedWindows, timeId) => {
+        const objectWithAmountOfNumberOfVotesForId =  arraySelectedWindows?.find(v => v.timeId === timeId);
+        return objectWithAmountOfNumberOfVotesForId?.numberOfVotes   
+    };
+    
     useEffect(() => {
         console.log(window.innerWidth)
         
@@ -308,7 +312,21 @@ let SelectionOfDates = () => {
 
                                 dataIndex: t.id,
                                 key: t.id,
-                                render: (timeId) => (timeId == "x" || !timeId ? timeId : ( !(infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))) && <Checkbox disabled={infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))} defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>)),
+                                render: (timeId) => (
+                                   
+                                    (timeId == "x" || !timeId ? 
+                                      timeId : 
+                                      (
+                                       ( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.oneToOne )
+                                        && 
+                                        <Checkbox 
+                                          defaultChecked={idsRef.current.includes(timeId)}  
+                                          onChange={(e) => { checkBoxChange(e, timeId) }}
+                                        />
+                                      )
+                                    )
+                                )
+                                  
                             })
 
 
@@ -355,7 +373,24 @@ let SelectionOfDates = () => {
 
                             dataIndex: t.id,
                             key: t.id,
-                            render: (timeId) => (timeId == "x" || !timeId ? timeId : (!(infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId))) &&<Checkbox defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>)),
+                            render: (timeId) => (
+                                (timeId == "x" || !timeId ? 
+                                   
+                                  timeId : 
+
+                                  (
+                                        (
+                                             numberOfVotersPerWindow(infoOfVotes, timeId) < meetingDataRef.current.oneToOne 
+        
+                                        ) 
+                                        && 
+                                        <Checkbox 
+                                            defaultChecked={idsRef.current.includes(timeId)}  
+                                            onChange={(e) => { checkBoxChange(e, timeId) }}
+                                        />
+                                    )
+                                ) 
+                            )
                         })
                     
                 })

@@ -94,13 +94,7 @@ let EditMeeting = () => {
         }
 
     }
-    const onChange = (checked) => {
-        setFormData({
-            ...formData,
-            onlineConference: checked
-        });
-        console.log(checked)
-    };
+
     const onPanelChange = (value, mode) => {
         console.log(value.format('YYYY-MM-DD'), mode);//2025-05-01 month
         //setSelectedDays([...selectedDays,value.format('YYYY-MM-DD'), mode])
@@ -227,11 +221,19 @@ let EditMeeting = () => {
                         <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
 
                     
-                        <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
-                        <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={onChange} />
-                        <Typography.Title level={5} >Private meeting</Typography.Title>
-                        <Switch style={{ width: "30px", marginBottom:20 }} value={formData.private} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
-                
+                        <Flex style={{ marginTop: 20 }}>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
+                            <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("onlineConference", checked)}} />
+                        </Flex>
+
+                        <Flex style={{ marginTop: 20 }}>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>1:1</Typography.Title>
+                            <Switch value={formData.oneToOne} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("oneToOne", checked)}} />
+                        </Flex>
+                        <Flex>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>
+                            <Switch style={{ width: "30px"}} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
+                        </Flex>
                         {formData.private&& 
                         <Flex  style={{marginBottom:10}}>
                             <Input value={actualInvited} onChange={(e)=>{setActualInvited(e.currentTarget.value)}} placeholder="Add emails of invited" />
