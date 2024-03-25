@@ -7,7 +7,7 @@ import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 let VotesComponent = () => {
-    const [datesForSelect, setDatesForSelect] =useState([])
+    const [datesForSelect, setDatesForSelect] = useState([])
     const { Text } = Typography;
     const { meetingId } = useParams()
     const { token } = useParams()
@@ -29,7 +29,7 @@ let VotesComponent = () => {
 
     useEffect(() => {
         console.log(window.innerWidth)
-        
+
         handleResize()
         window.addEventListener('resize', handleResize);
 
@@ -38,7 +38,7 @@ let VotesComponent = () => {
         };
     }, [window.innerWidth]);
 
-  
+
 
     let getVotes = async () => {
 
@@ -76,12 +76,12 @@ let VotesComponent = () => {
             setMeetingData(data[0])
             let infoOfVotes = await getVotes(data[0])
             createColumns(data[0], arrayOfDates, infoOfVotes)
-            let arrayInSelect=[]
+            let arrayInSelect = []
 
-            data[0].dates.forEach((d)=>{
+            data[0].dates.forEach((d) => {
                 arrayInSelect.push({
-                    value:d.date,
-                    label:d.date
+                    value: d.date,
+                    label: d.date
                 })
             })
             setDatesForSelect(arrayInSelect)
@@ -112,9 +112,43 @@ let VotesComponent = () => {
         }
 
     }
-    const onChangeSelect =(arrayOfDates)=>{
-        
+    const onChangeSelect = (arrayOfDates) => {
+
         getMeetingInfo(arrayOfDates)
+
+    }
+    const statistic = (dateData, timeInfo, infoOfVotes) => {
+        let infoOfVotesForStadistic = infoOfVotes.find((vInfo) => vInfo.timeId == timeInfo.id)
+        const dateArray = dateData.date.split("-");
+        const year = parseInt(dateArray[0], 10);
+        const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
+        const day = parseInt(dateArray[2], 10);
+        const dateObject = new Date(year, month, day)
+        const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
+        const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
+
+        return (
+
+            <Flex key={timeInfo.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
+                <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
+                <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
+                <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
+                <Text style={{ fontWeight: 'bold' }}>{timeInfo.time}</Text>
+                {infoOfVotesForStadistic ?
+                    <Tooltip color='#448BA7' placement="top" title={infoOfVotesForStadistic.names.join(', ')}>
+                        <Flex align='center'>
+                            <Image style={{ width: 20, height: 20, marginRight: 5 }} src='/audience.png'></Image>
+                            <Text> {infoOfVotesForStadistic.numberOfVotes}</Text>
+                        </Flex>
+                    </Tooltip>
+                    :
+                    <Flex align='center'>
+                        <Image style={{ width: 20, height: 20, marginRight: 5 }} src='/audience.png'></Image>
+                        <Text>0 </Text>
+                    </Flex>
+                }
+            </Flex>
+        )
 
     }
     let createColumns = (currentMeeting, arrayOfDates, infoOfVotes) => {
@@ -129,93 +163,27 @@ let VotesComponent = () => {
         })
 
         currentMeeting?.dates?.map((d) => {
-            if(arrayOfDates?.length>0 ){
-
-                arrayOfDates?.forEach((daySelected)=>{
-                    if(d.date==daySelected){
+            if (arrayOfDates?.length > 0) {
+                arrayOfDates?.forEach((daySelected) => {
+                    if (d.date == daySelected) {
                         return d.times.map((t) => {
-                            let temp =  infoOfVotes.find((vInfo)=>vInfo.timeId==t.id)
-                            const dateArray = d.date.split("-");
-                            const year = parseInt(dateArray[0], 10);
-                            const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-                            const day = parseInt(dateArray[2], 10);
-                            const dateObject = new Date(year, month, day)
-                            const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-                            const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
-
-
-
-
                             columns.push({
-                                title:
-                                    <Flex key={t.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                                        <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                                        <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                                        {temp?
-                                            <Tooltip  color='#448BA7' placement="top" title={temp.names.join(', ')}>
-                                                <Text>
-                                                    <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                                    {temp.numberOfVotes}
-                                                </Text>
-                                            </Tooltip>
-                                            :
-                                            <Text>
-                                                <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                                0
-                                            </Text>
-                                        }
-                                    </Flex>,
-
+                                title:statistic(d,t,infoOfVotes),
                                 dataIndex: t.id,
                                 key: t.id,
                                 render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
                             })
-
-
-
                         })
                     }
                 })
-            }else{
-              
+            } else {
                 return d.times.map((t) => {
-                    let temp =  infoOfVotes.find((vInfo)=>vInfo.timeId==t.id)
-                    const dateArray = d.date.split("-");
-                    const year = parseInt(dateArray[0], 10);
-                    const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-                    const day = parseInt(dateArray[2], 10);
-                    const dateObject = new Date(year, month, day)
-                    const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-                    const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
-
                     columns.push({
-                        date:d.date,
-                        title:
-                            <Flex key={t.id} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                                <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                                <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                                <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                                <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                                {temp?
-                                    <Tooltip  color='#448BA7' placement="top" title={temp.names.join(', ')}>
-                                        <Text>
-                                            <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                            {temp.numberOfVotes}
-                                        </Text>
-                                    </Tooltip>
-                                    :
-                                    <Text>
-                                        <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                        0
-                                    </Text>
-                                }
-                            </Flex>,
-
+                        date: d.date,
+                        title:statistic(d,t,infoOfVotes),
                         dataIndex: t.id,
                         key: t.id,
-                        render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox  defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                        render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox defaultChecked={idsRef.current.includes(timeId)} onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
                     })
                 })
             }
@@ -225,23 +193,23 @@ let VotesComponent = () => {
         }
     }
 
-    let countVotess=(arrOfVotes)=>{
-        arrOfVotes = arrOfVotes.filter(av =>isNaN(Object.values(av)[0]) && isNaN(Object.values(av)[1]) );
+    let countVotess = (arrOfVotes) => {
+        arrOfVotes = arrOfVotes.filter(av => isNaN(Object.values(av)[0]) || Object.values(av)[Object.values(av).length - 1] != "You");
 
-        let votesStadistic=[]
+        let votesStadistic = []
 
-        arrOfVotes.forEach((v)=>{
+        arrOfVotes.forEach((v) => {
             const attributeNamesArray = Object.keys(v);
-            attributeNamesArray.forEach((atrName)=>{
-                if(atrName!="name"){
-                    let exist = votesStadistic.find((date)=>date.timeId==atrName )
-                    if(!exist){
+            attributeNamesArray.forEach((atrName) => {
+                if (atrName != "name") {
+                    let exist = votesStadistic.find((date) => date.timeId == atrName)
+                    if (!exist) {
                         votesStadistic.push({
-                            numberOfVotes:1,
-                            timeId:atrName,
-                            names:[v.name]
+                            numberOfVotes: 1,
+                            timeId: atrName,
+                            names: [v.name]
                         })
-                    }else{
+                    } else {
                         exist.numberOfVotes++
                         exist.names.push(v.name)
                     }
@@ -272,66 +240,29 @@ let VotesComponent = () => {
         })
     }
     if (isSmallScreen) {
-        return(
-        <Flex style={{ minHeight: "100vh", width: "100%" }}>
-            <Flex vertical style={{ border: "1px solid #D3DCE3", minHeight: "100vh", backgroundColor: "white",width:"100%", borderRadius: 10 }}>
-                <Flex vertical style={{ borderBottom: "1px solid #D3DCE3", height: "40%", padding:10, justifyContent:"space-around" }}>
-                    <Flex style={{justifyContent:"center"}}>
-                        <Title level={2}>{meetingData?.title}</Title>
-                    </Flex>
-                    <Flex>
-                        <Button type='primary' style={{marginLeft:5, marginRight:5}} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
-                        {!meetingData?.private&&<Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
-                    </Flex>
-                    <Text style={{marginTop:10 }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
-                    <Flex style={{justifyContent:"center", marginTop:10}}>
-                        <Text style={{ fontWeight: 'bold', fontSize:15 }}>Availabilities</Text>
-                    </Flex>
-                    <Flex vertical>
-                        <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
-                        <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
-                        <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                        <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
-                    </Flex>
-                </Flex>
-                <Flex align='center' vertical style={{ width: "100%", minHeight: "60%", padding: 20 }}>
-                    <Select
-                        mode="multiple"
-                        allowClear
-                        showSearch
-                        placeholder="Filter by days"
-                        optionFilterProp="children"
-                        options={datesForSelect}
-                        onChange={onChangeSelect}
-                        style={{width:"90%", marginBottom:10}}
-                    />
-                    {renderDates()}
-                </Flex>
-            </Flex>
-        </Flex>
-        )
-    }
-    return (
-        <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
-                <Flex vertical style={{  border: "1px solid #D3DCE3",backgroundColor: "white",borderRadius: 10,padding:20, width:"60%"}}>
-                    <Flex style={{ borderBottom: "1px solid #D3DCE3"}}>
-
-                        <Flex justify="space-between" vertical style={{ width: "70%" }}>
-
+        return (
+            <Flex style={{ minHeight: "100vh", width: "100%" }}>
+                <Flex vertical style={{ border: "1px solid #D3DCE3", minHeight: "100vh", backgroundColor: "white", width: "100%", borderRadius: 10 }}>
+                    <Flex vertical style={{ borderBottom: "1px solid #D3DCE3", height: "40%", padding: 10, justifyContent: "space-around" }}>
+                        <Flex style={{ justifyContent: "center" }}>
                             <Title level={2}>{meetingData?.title}</Title>
-                            <Text style={{ fontWeight: 'bold' }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
+                        </Flex>
+                        <Flex>
+                            <Button type='primary' style={{ marginLeft: 5, marginRight: 5 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
+                            {!meetingData?.private && <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
+                        </Flex>
+                        <Text style={{ marginTop: 10 }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
+                        <Flex style={{ justifyContent: "center", marginTop: 10 }}>
+                            <Text style={{ fontWeight: 'bold', fontSize: 15 }}>Availabilities</Text>
+                        </Flex>
+                        <Flex vertical>
                             <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
                             <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
-                            <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
-                            <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
-                        </Flex>
-                        <Flex align='center'>
-                           
-                            <Button type='primary' style={{ marginLeft: 20, marginRight:20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
-                            {!meetingData?.private&&<Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
+                            <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                            <Text ><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
                         </Flex>
                     </Flex>
-                    <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
+                    <Flex align='center' vertical style={{ width: "100%", minHeight: "60%", padding: 20 }}>
                         <Select
                             mode="multiple"
                             allowClear
@@ -340,13 +271,50 @@ let VotesComponent = () => {
                             optionFilterProp="children"
                             options={datesForSelect}
                             onChange={onChangeSelect}
-                            style={{width:"30%", marginBottom:10}}
+                            style={{ width: "90%", marginBottom: 10 }}
                         />
                         {renderDates()}
                     </Flex>
                 </Flex>
             </Flex>
         )
+    }
+    return (
+        <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
+            <Flex vertical style={{ border: "1px solid #D3DCE3", backgroundColor: "white", borderRadius: 10, padding: 20, width: "60%" }}>
+                <Flex style={{ borderBottom: "1px solid #D3DCE3" }}>
+
+                    <Flex justify="space-between" vertical style={{ width: "70%" }}>
+
+                        <Title level={2}>{meetingData?.title}</Title>
+                        <Text style={{ fontWeight: 'bold' }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
+                        <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
+                        <Text style={{ fontWeight: 'bold' }}><img src='/left.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='description Icon' />{meetingData?.descriptions}</Text>
+                        <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
+                        <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
+                    </Flex>
+                    <Flex align='center'>
+
+                        <Button type='primary' style={{ marginLeft: 20, marginRight: 20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
+                        {!meetingData?.private && <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
+                    </Flex>
+                </Flex>
+                <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>
+                    <Select
+                        mode="multiple"
+                        allowClear
+                        showSearch
+                        placeholder="Filter by days"
+                        optionFilterProp="children"
+                        options={datesForSelect}
+                        onChange={onChangeSelect}
+                        style={{ width: "30%", marginBottom: 10 }}
+                    />
+                    {renderDates()}
+                </Flex>
+            </Flex>
+        </Flex>
+    )
 }
 
 

@@ -166,7 +166,10 @@ let PrivateSelectionOfDates = () => {
             method: 'DELETE'
         })
     }
-
+    const numberOfVotersPerWindow = (arraySelectedWindows, timeId) => {
+        const objectWithAmountOfNumberOfVotesForId =  arraySelectedWindows?.find(v => v.timeId === timeId);
+        return objectWithAmountOfNumberOfVotesForId?.numberOfVotes   
+    };
     let checkBoxChange = (e, timeId) => {
 
         if(name!="" || nameRef.current!=""){ 
@@ -244,8 +247,26 @@ let PrivateSelectionOfDates = () => {
 
                                 dataIndex: t.id,
                                 key: t.id,
-                                render: (timeId) => (timeId == "x" || !timeId ? timeId : (!(infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId)))) &&<Checkbox disabled={name === "" && nameRef.current === ""}
-                                defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                                render: (timeId) => (
+                                   
+                                    (timeId == "x" || !timeId ? 
+                                      timeId : 
+                                      (
+                                        ((( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.amountOfLimitedSelection)
+                                         &&
+                                         (meetingDataRef.current.limitedSelection))
+                                         || 
+                                         !meetingDataRef.current.limitedSelection
+                                        )
+                                        && 
+                                        <Checkbox 
+                                            disabled={name === "" && nameRef.current === ""} 
+                                            defaultChecked={idsRef.current.includes(timeId)}  
+                                            onChange={(e) => { checkBoxChange(e, timeId) }}
+                                        />
+                                      )
+                                    )
+                                )
                             })
 
 
@@ -291,7 +312,26 @@ let PrivateSelectionOfDates = () => {
 
                             dataIndex: t.id,
                             key: t.id,
-                            render: (timeId) => (timeId == "x" || !timeId ? timeId : (!(infoOfVotes?.find((v)=>v.timeId==timeId && meetingDataRef.current.oneToOne==true && !idsRef.current.find((id)=>id==timeId)))) && <Checkbox  disabled={name === "" && nameRef.current === ""} defaultChecked={idsRef.current.includes(timeId)}  onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                            render: (timeId) => (
+                                   
+                                (timeId == "x" || !timeId ? 
+                                  timeId : 
+                                  (
+                                   ((( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.amountOfLimitedSelection)
+                                    &&
+                                    (meetingDataRef.current.limitedSelection))
+                                    || 
+                                    !meetingDataRef.current.limitedSelection
+                                   )
+                                    && 
+                                    <Checkbox 
+                                        disabled={name === "" && nameRef.current === ""} 
+                                        defaultChecked={idsRef.current.includes(timeId)}  
+                                        onChange={(e) => { checkBoxChange(e, timeId) }}
+                                    />
+                                  )
+                                )
+                            )
                         })
                     
                 })

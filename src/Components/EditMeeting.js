@@ -228,7 +228,7 @@ let EditMeeting = () => {
 
                         <Flex style={{ marginTop: 20 }}>
                             <Typography.Title level={5} style={{ marginRight: 20 }}>1:1</Typography.Title>
-                            <Switch value={formData.oneToOne} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("oneToOne", checked)}} />
+                            <Switch value={formData.limitedSelection} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("limitedSelection", checked)}} />
                         </Flex>
                         <Flex>
                             <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>

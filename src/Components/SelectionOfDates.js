@@ -32,7 +32,7 @@ let SelectionOfDates = () => {
     };
     const numberOfVotersPerWindow = (arraySelectedWindows, timeId) => {
         const objectWithAmountOfNumberOfVotesForId =  arraySelectedWindows?.find(v => v.timeId === timeId);
-        return objectWithAmountOfNumberOfVotesForId?.numberOfVotes   
+        return objectWithAmountOfNumberOfVotesForId?.numberOfVotes || 0  
     };
     
     useEffect(() => {
@@ -140,7 +140,8 @@ let SelectionOfDates = () => {
 
     }
     let countVotess=(arrOfVotes)=>{
-        arrOfVotes = arrOfVotes.filter(av =>isNaN(Object.values(av)[0]) && isNaN(Object.values(av)[1]) );
+        //мы пропускаем его если
+        arrOfVotes = arrOfVotes.filter(av =>isNaN(Object.values(av)[0]) || Object.values(av)[Object.values(av).length-1]!="You");
         
         let votesStadistic=[]
 
@@ -260,7 +261,20 @@ let SelectionOfDates = () => {
     
         console.log(idsRef.current); // This will log the updated array
     }
- 
+    const markCheckBoxIfItsExist=(infoOfVotes, timeId)=>{
+
+        const yourVote=infoOfVotes.find((i)=>i.timeId==timeId)
+
+        if(yourVote){
+            let exist = yourVote.names.find((n)=>n=="You")
+            if(exist){
+                return true
+            }
+        }
+
+        return false
+        
+    }
     let createColumns = (currentMeeting, arrayOfDates, infoOfVotes) => {
 
         let columns=[]
@@ -317,11 +331,20 @@ let SelectionOfDates = () => {
                                     (timeId == "x" || !timeId ? 
                                       timeId : 
                                       (
-                                       ( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.oneToOne )
+                                        ((( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.amountOfLimitedSelection)
+                                         &&
+                                         (meetingDataRef.current.limitedSelection))
+                                            || 
+                                        !meetingDataRef.current.limitedSelection
+                                            ||
+                                        markCheckBoxIfItsExist(infoOfVotes, timeId)
+                                         )
+                                        
                                         && 
                                         <Checkbox 
-                                          defaultChecked={idsRef.current.includes(timeId)}  
-                                          onChange={(e) => { checkBoxChange(e, timeId) }}
+                                        disabled={(name === "" && nameRef.current === "")||(email=="" && emailRef.current=="") }
+                                            defaultChecked={idsRef.current.includes(timeId)}  
+                                            onChange={(e) => { checkBoxChange(e, timeId) }}
                                         />
                                       )
                                     )
@@ -379,12 +402,17 @@ let SelectionOfDates = () => {
                                   timeId : 
 
                                   (
-                                        (
-                                             numberOfVotersPerWindow(infoOfVotes, timeId) < meetingDataRef.current.oneToOne 
-        
-                                        ) 
+                                    ((( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.amountOfLimitedSelection)
+                                     &&
+                                     (meetingDataRef.current.limitedSelection))
+                                     || 
+                                     !meetingDataRef.current.limitedSelection
+                                     ||
+                                     markCheckBoxIfItsExist(infoOfVotes, timeId)
+                                    )
                                         && 
                                         <Checkbox 
+                                            disabled={(name === "" && nameRef.current === "")||(email=="" && emailRef.current=="") }
                                             defaultChecked={idsRef.current.includes(timeId)}  
                                             onChange={(e) => { checkBoxChange(e, timeId) }}
                                         />

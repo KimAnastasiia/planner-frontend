@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, message, Flex, Input, Switch, Calendar,Avatar, Divider, List, Skeleton, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
+import { Button, message, Flex, Input, Switch, Calendar, Avatar, Divider, List, Skeleton, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -16,44 +16,45 @@ let CreateMeeting = () => {
         descriptions: '',
         location: '',
         onlineConference: false,
-        private:false,
-        invited:[],
-        oneToOne:false
+        private: false,
+        invited: [],
+        limitedSelection: false,
+        amountOfLimitedSelection: 1
     });
     let indexTime = useRef(0)
     const [selectedDate, setSelectedDate] = useState([])
     const [defaultTime, setDefaultTime] = useState("")
     const [messageApi, contextHolder] = message.useMessage();
     const [sameTimeForAll, setSameTimeForAll] = useState(false)
-    const [actualInvited, setActualInvited]=useState("")
+    const [actualInvited, setActualInvited] = useState("")
     useEffect(() => {
-       if(sameTimeForAll){
+        if (sameTimeForAll) {
             addDefaultTime()
-       }else{
-        setDefaultTime("")
-       }
-    }, [sameTimeForAll,defaultTime, selectedDate.length]);
+        } else {
+            setDefaultTime("")
+        }
+    }, [sameTimeForAll, defaultTime, selectedDate.length]);
 
-    const isValidEmail=(email)=>{
+    const isValidEmail = (email) => {
         // Regular expression for basic email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
-    const addInvited=()=>{
-        if(isValidEmail(actualInvited)){
-            let copyOfInvatied=[...formData.invited]
-            let exist = copyOfInvatied.find((p)=>p==actualInvited)
-            if(!exist){
+    const addInvited = () => {
+        if (isValidEmail(actualInvited)) {
+            let copyOfInvatied = [...formData.invited]
+            let exist = copyOfInvatied.find((p) => p == actualInvited)
+            if (!exist) {
                 copyOfInvatied.push(actualInvited)
                 setFormData({
                     ...formData,
-                    invited:copyOfInvatied
+                    invited: copyOfInvatied
                 });
                 setActualInvited("")
-            }else{
+            } else {
                 invatedPersonAlreadyExistInList()
             }
-        }else{
+        } else {
             messageApi.open({
                 type: 'error',
                 content: "Invalid email format",
@@ -62,28 +63,28 @@ let CreateMeeting = () => {
     }
     let CreateNewMeeting = async () => {
 
-        if(formData.title!=""&& (formData.location!="" || formData.onlineConference!=false) && selectedDate.length>0){
-            let dateWithoutTime = selectedDate.find(d => d.times.length==0)
+        if (formData.title != "" && (formData.location != "" || formData.onlineConference != false) && selectedDate.length > 0) {
+            let dateWithoutTime = selectedDate.find(d => d.times.length == 0)
 
-            if(dateWithoutTime){
+            if (dateWithoutTime) {
                 return didntAddAllInfo("in time of meetings")
             }
-        }else{
+        } else {
             return didntAddAllInfo("in Title, Description, Location and days of meeting")
         }
 
-        
+
         let objToSent = {
             ...formData,
             dates: [...selectedDate]
         }
-        objToSent.invited=objToSent.invited.map((i)=>{
+        objToSent.invited = objToSent.invited.map((i) => {
             return {
-                email:i
+                email: i
             }
         })
         console.log(objToSent)
-        let response = await fetch(Commons.baseUrl +"/meetings?access_token=" + localStorage.getItem("access_token"), {
+        let response = await fetch(Commons.baseUrl + "/meetings?access_token=" + localStorage.getItem("access_token"), {
 
             method: "POST",
             headers: {
@@ -99,46 +100,46 @@ let CreateMeeting = () => {
                 descriptions: '',
                 location: '',
                 onlineConference: false,
-                private:false,
-                invited:[]
+                private: false,
+                invited: []
             });
-            navigate("/votes/" +data.token+"/"+data.meetingId)
+            navigate("/votes/" + data.token + "/" + data.meetingId)
             success()
-        }else{
+        } else {
             failed()
         }
 
     }
     const success = () => {
         messageApi.open({
-          type: 'success',
-          content: 'The meeting created successfully',
+            type: 'success',
+            content: 'The meeting created successfully',
         });
     };
     const invatedPersonAlreadyExistInList = () => {
 
         messageApi.open({
-          type: 'error',
-          content: 'The person with this email is already on your invite list',
+            type: 'error',
+            content: 'The person with this email is already on your invite list',
         });
 
     };
     const failed = () => {
         messageApi.open({
-          type: "error",
-          content: 'Failed to create meeting, check the correctness of the entered data',
+            type: "error",
+            content: 'Failed to create meeting, check the correctness of the entered data',
         });
     };
     const didntAddAllInfo = (data) => {
         messageApi.open({
-          type: "error",
-          content: 'Please enter data '+data,
+            type: "error",
+            content: 'Please enter data ' + data,
         });
     };
     const onChangeSwitchs = (name, checked) => {
         setFormData({
             ...formData,
-            [name]:checked
+            [name]: checked
         });
         console.log(checked)
     };
@@ -165,14 +166,14 @@ let CreateMeeting = () => {
         width: 300,
         border: `1px solid ${token.colorBorderSecondary}`,
         borderRadius: token.borderRadiusLG,
-        marginRight:10
+        marginRight: 10
     };
     const handleInputChange = (e, name, day) => {
-        if(name=="defaultTime"){
+        if (name == "defaultTime") {
             let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
             setDefaultTime(curTime)
-           
-        }else if (name == "time") {
+
+        } else if (name == "time") {
             let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
             indexTime.current = indexTime.current + 1
             let copyOfDay = [...selectedDate]
@@ -203,17 +204,17 @@ let CreateMeeting = () => {
 
         setSelectedDate(currentDays)
     }
-    const addDefaultTime=()=>{
-        
-        if(defaultTime!=""){ 
+    const addDefaultTime = () => {
+
+        if (defaultTime != "") {
 
             let copyOfDay = [...selectedDate]
 
-            copyOfDay.map((d)=>{
+            copyOfDay.map((d) => {
 
-                let exist = d.times.find((t)=>t.time==defaultTime)
+                let exist = d.times.find((t) => t.time == defaultTime)
 
-                if(!exist){
+                if (!exist) {
                     indexTime.current = indexTime.current + 1
                     d.times.push({ time: defaultTime, timeId: indexTime.current })
                 }
@@ -229,9 +230,9 @@ let CreateMeeting = () => {
         let currentDays = copyOfDays.filter((d) => d.date !== day)
         setSelectedDate(currentDays)
     }
-    const deleteEmailOfInvited=(email)=>{
-        let listOfInvited=[...formData.invited]
-        listOfInvited=listOfInvited.filter((e)=>e!=email)
+    const deleteEmailOfInvited = (email) => {
+        let listOfInvited = [...formData.invited]
+        listOfInvited = listOfInvited.filter((e) => e != email)
         setFormData({
             ...formData,
             invited: listOfInvited
@@ -244,42 +245,47 @@ let CreateMeeting = () => {
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Create group poll</Title>
 
                 <Flex vertical justify="space-around">
-               
-                        <Typography.Title level={5}>Title</Typography.Title>
-                        <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
 
-                        <Typography.Title level={5}>Description</Typography.Title>
-                        <Input value={formData.descriptions} onChange={(e) => { handleInputChange(e, "descriptions") }} />
+                    <Typography.Title level={5}>Title</Typography.Title>
+                    <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
 
-                        <Typography.Title level={5}>Location</Typography.Title>
-                        <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
+                    <Typography.Title level={5}>Description</Typography.Title>
+                    <Input value={formData.descriptions} onChange={(e) => { handleInputChange(e, "descriptions") }} />
 
-                        <Flex style={{ marginTop: 20 }}>
-                            <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
-                            <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("onlineConference", checked)}} />
-                        </Flex>
+                    <Typography.Title level={5}>Location</Typography.Title>
+                    <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
 
-                        <Flex style={{ marginTop: 20 }}>
-                            <Typography.Title level={5} style={{ marginRight: 20 }}>1:1</Typography.Title>
-                            <Switch value={formData.oneToOne} style={{ width: "30px" }} onChange={(checked)=>{onChangeSwitchs("oneToOne", checked)}} />
-                        </Flex>
-                        <Flex>
-                            <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>
-                            <Switch style={{ width: "30px"}} onChange={(checked)=>{onChangeSwitchs("private", checked)}}/>
-                        </Flex>
-                        {formData.private&& 
-                        <Flex  style={{marginBottom:10}}>
-                            <Input value={actualInvited} onChange={(e)=>{setActualInvited(e.currentTarget.value)}} placeholder="Add emails of invited" />
+                    <Flex justify="space-between" style={{ marginTop: 20 }}>
+                        <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
+                        <Switch value={formData.onlineConference} style={{ width: "30px" }} onChange={(checked) => { onChangeSwitchs("onlineConference", checked) }} />
+                    </Flex>
+
+                    <Flex justify="space-between">
+                        <Typography.Title level={5} style={{ marginRight: 20 }}>Limited selection</Typography.Title>
+                        <Switch value={formData.limitedSelection} style={{ width: "30px" }} onChange={(checked) => { onChangeSwitchs("limitedSelection", checked) }} />
+                    </Flex>
+                    {formData.limitedSelection &&
+                        <Flex vertical style={{ marginBottom: 20 }}>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>Amount of limited selection</Typography.Title>
+                            <Input type="number" value={formData?.amountOfLimitedSelection} style={{ width: "100%" }} onChange={(e) => { handleInputChange(e, "amountOfLimitedSelection") }} />
+                        </Flex>}
+                    <Flex justify="space-between">
+                        <Typography.Title level={5} style={{ marginRight: 20 }}>Private meeting</Typography.Title>
+                        <Switch style={{ width: "30px" }} onChange={(checked) => { onChangeSwitchs("private", checked) }} />
+                    </Flex>
+                    {formData.private &&
+                        <Flex style={{ marginBottom: 10 }}>
+                            <Input value={actualInvited} onChange={(e) => { setActualInvited(e.currentTarget.value) }} placeholder="Add emails of invited" />
                             <Button onClick={addInvited}>Add</Button>
                         </Flex>
-                        }
-                       
-                        {formData.private &&
+                    }
+
+                    {formData.private &&
                         <div
                             id="scrollableDiv"
                             style={{
                                 height: 300,
-                                width:300,
+                                width: 300,
                                 overflow: 'auto',
                                 padding: '0 16px',
                                 border: '1px solid rgba(140, 140, 140, 0.35)',
@@ -287,40 +293,40 @@ let CreateMeeting = () => {
                         >
                             <InfiniteScroll
                                 dataLength={formData.invited.length}
-                            
+
                                 loader={
-                                <Skeleton
-                                    avatar
-                                    paragraph={{
-                                    rows: 1,
-                                    }}
-                                    active
-                                />
+                                    <Skeleton
+                                        avatar
+                                        paragraph={{
+                                            rows: 1,
+                                        }}
+                                        active
+                                    />
                                 }
                                 scrollableTarget="scrollableDiv"
                             >
                                 <List
                                     dataSource={formData.invited}
                                     renderItem={(item) => (
-                                    <List.Item key={item}>
-                                        <List.Item.Meta
-                                        
-                                            title={<a href="https://ant.design">{item}</a>}
-                                        
-                                        />
-                                        <Button onClick={()=>{deleteEmailOfInvited(item)}} danger>Delete</Button>
-                                    </List.Item>
-                                     )}
+                                        <List.Item key={item}>
+                                            <List.Item.Meta
+
+                                                title={<a href="https://ant.design">{item}</a>}
+
+                                            />
+                                            <Button onClick={() => { deleteEmailOfInvited(item) }} danger>Delete</Button>
+                                        </List.Item>
+                                    )}
                                 />
                             </InfiniteScroll>
                         </div>}
-                 
-                 
+
+
                 </Flex>
 
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>
 
-                <Flex  vertical justify="space-around" style={{ width: "100%" }}>
+                <Flex vertical justify="space-around" style={{ width: "100%" }}>
 
 
 
@@ -410,37 +416,42 @@ let CreateMeeting = () => {
                         />
                     </div>
                     <div>
-                       {selectedDate.length>0&&
-                        <Flex vertical align='center' style={{marginTop:20}}>
-                            <Flex>
-                                <Typography.Title level={5} style={{ marginRight: 20 }}>Add same time to all dates</Typography.Title>
-                                <Switch value={sameTimeForAll} onChange={()=>{setSameTimeForAll(!sameTimeForAll)}} style={{ width: "30px" }} />
-                            </Flex>
-                            {sameTimeForAll&&<TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "defaultTime") }}  format={"HH:mm"} style={{ margin: 20 }} />}
-                        </Flex>}
+                        {selectedDate.length > 0 &&
+                            <Flex vertical align='center' style={{ marginTop: 20 }}>
+                                <Flex>
+                                    <Typography.Title level={5} style={{ marginRight: 20 }}>Add same time to all dates</Typography.Title>
+                                    <Switch value={sameTimeForAll} onChange={() => { setSameTimeForAll(!sameTimeForAll) }} style={{ width: "30px" }} />
+                                </Flex>
+                                {sameTimeForAll && <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "defaultTime") }} format={"HH:mm"} style={{ margin: 20 }} />}
+                            </Flex>}
                         {selectedDate.map((date) =>
 
-                            <Flex align="center" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
-                                <Flex>
+                            <Flex vertical align="center" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
+                                <Flex justify="space-around" style={{ width:"100%", marginBottom:20}}>
                                     <Typography.Title level={5}>{date.date}</Typography.Title>
+                                    <Button danger type="dashed" onClick={() => { deleteDay(date.date) }}><DeleteOutlined /></Button>
                                 </Flex>
-                                <Flex vertical align="center">
+                                <Flex vertical align="center" style={{width:"100%"}}>
 
-                                    {date.times.map((timeObj) =>
+                                    <Row style={{width:"100%"}} gutter={8}>
+                                        
+                                        {date.times.map((timeObj) =>
 
-                                        <Flex style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
-                                            <Typography.Title level={5}>{timeObj.time}</Typography.Title>
-                                            <Button onClick={() => { deleteTimeOfDate(date.day, timeObj.timeId) }} style={{ marginLeft: 20 }}><DeleteOutlined /></Button>
-                                        </Flex>
-                                    )}
+                                            <Col span={8} style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20}}>   
+                                                <Typography.Title level={5}>{timeObj.time}</Typography.Title>
+                                                <Button onClick={() => { deleteTimeOfDate(date.day, timeObj.timeId) }} style={{ marginLeft: 20 }}><DeleteOutlined /></Button>
+                                            </Col>
+                                        
+                                        )}
+
+                                    </Row>
+
                                     <Flex align='center'>
                                         <Typography.Title level={5} style={{ marginLeft: 20 }}>Choose time for this date</Typography.Title>
                                         <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.date) }} format={"HH:mm"} style={{ margin: 20 }} />
                                     </Flex>
                                 </Flex>
-                                <div>
-                                    <Button danger type="dashed" onClick={() => { deleteDay(date.date) }}><DeleteOutlined /></Button>
-                                </div>
+                             
                             </Flex>
                         )}
                     </div>
