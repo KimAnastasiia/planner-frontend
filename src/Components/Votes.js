@@ -1,11 +1,12 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect } from 'react';
+import React, { useState,useRef, useEffect } from 'react';
 import { Button, Avatar, Flex, Card, Col, Image, Typography, Pagination, Input, Checkbox, Table, Select, Tooltip } from 'antd';
 import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
+import TableHeadreStatistic from './TableHeadreStatistic';
 let VotesComponent = () => {
     const [datesForSelect, setDatesForSelect] = useState([])
     const { Text } = Typography;
@@ -13,12 +14,10 @@ let VotesComponent = () => {
     const { token } = useParams()
     let [meetingData, setMeetingData] = useState()
     const { Title } = Typography;
-    let [ids, setIds] = useState([6, 7])
     let [votes, setVotes] = useState([])
     let [columnsArray, setColumnsArray] = useState([])
     let navigate = useNavigate()
     const [isSmallScreen, setIsSmallScreen] = useState(false);
-
     useEffect(() => {
         getMeetingInfo()
     }, [])
@@ -37,8 +36,6 @@ let VotesComponent = () => {
             window.removeEventListener('resize', handleResize);
         };
     }, [window.innerWidth]);
-
-
 
     let getVotes = async () => {
 
@@ -89,68 +86,12 @@ let VotesComponent = () => {
 
     }
 
-    let checkBoxChange = (e, timeId) => {
-
-        let copyOfDates = [...ids]
-        if (e.target.checked == true) {
-
-
-            let currentTime = copyOfDates.find((time) => time == timeId)
-
-
-            if (!currentTime) {
-                copyOfDates = [...ids, timeId]
-
-            }
-            setIds(copyOfDates)
-        }
-        if (e.target.checked == false) {
-
-            copyOfDates = copyOfDates.filter((time) => time !== timeId)
-
-            setIds(copyOfDates)
-        }
-
-    }
     const onChangeSelect = (arrayOfDates) => {
 
         getMeetingInfo(arrayOfDates)
 
     }
-    const statistic = (dateData, timeInfo, infoOfVotes) => {
-        let infoOfVotesForStadistic = infoOfVotes.find((vInfo) => vInfo.timeId == timeInfo.id)
-        const dateArray = dateData.date.split("-");
-        const year = parseInt(dateArray[0], 10);
-        const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-        const day = parseInt(dateArray[2], 10);
-        const dateObject = new Date(year, month, day)
-        const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-        const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
 
-        return (
-
-            <Flex key={timeInfo.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                <Text style={{ fontWeight: 'bold' }}>{timeInfo.time}</Text>
-                {infoOfVotesForStadistic ?
-                    <Tooltip color='#448BA7' placement="top" title={infoOfVotesForStadistic.names.join(', ')}>
-                        <Flex align='center'>
-                            <Image style={{ width: 20, height: 20, marginRight: 5 }} src='/audience.png'></Image>
-                            <Text> {infoOfVotesForStadistic.numberOfVotes}</Text>
-                        </Flex>
-                    </Tooltip>
-                    :
-                    <Flex align='center'>
-                        <Image style={{ width: 20, height: 20, marginRight: 5 }} src='/audience.png'></Image>
-                        <Text>0 </Text>
-                    </Flex>
-                }
-            </Flex>
-        )
-
-    }
     let createColumns = (currentMeeting, arrayOfDates, infoOfVotes) => {
 
         let columns = []
@@ -168,10 +109,12 @@ let VotesComponent = () => {
                     if (d.date == daySelected) {
                         return d.times.map((t) => {
                             columns.push({
-                                title:statistic(d,t,infoOfVotes),
+                                title: <TableHeadreStatistic dateData={d} timeInfo={t} infoOfVotes={infoOfVotes} />,
                                 dataIndex: t.id,
                                 key: t.id,
-                                render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                                render: (timeId) => ((timeId == "x" || !timeId) &&
+                                    <Flex justify='center' style={{ width: "100%" }}>{timeId}</Flex>)
+                           
                             })
                         })
                     }
@@ -180,10 +123,12 @@ let VotesComponent = () => {
                 return d.times.map((t) => {
                     columns.push({
                         date: d.date,
-                        title:statistic(d,t,infoOfVotes),
+                        title: <TableHeadreStatistic dateData={d} timeInfo={t} infoOfVotes={infoOfVotes} />,
                         dataIndex: t.id,
                         key: t.id,
-                        render: (timeId) => (timeId == "x" || !timeId ? timeId : <Checkbox defaultChecked={idsRef.current.includes(timeId)} onChange={(e) => { checkBoxChange(e, timeId) }}></Checkbox>),
+                        render: (timeId) => ((timeId == "x" || !timeId) &&
+                            <Flex justify='center' style={{ width: "100%" }}>{timeId}</Flex>)
+                      
                     })
                 })
             }
@@ -194,7 +139,6 @@ let VotesComponent = () => {
     }
 
     let countVotess = (arrOfVotes) => {
-        arrOfVotes = arrOfVotes.filter(av => isNaN(Object.values(av)[0]) || Object.values(av)[Object.values(av).length - 1] != "You");
 
         let votesStadistic = []
 
@@ -216,7 +160,7 @@ let VotesComponent = () => {
                 }
             })
         })
-        //setInfoOfVotes(votesStadistic)
+     
         return votesStadistic
     }
     let renderDates = () => {
@@ -226,7 +170,6 @@ let VotesComponent = () => {
                 <Table
                     columns={columnsArray}
                     dataSource={votes}
-                    //scroll={{ x: 900, y: 170 }}
                     bordered
                 />
             </div>

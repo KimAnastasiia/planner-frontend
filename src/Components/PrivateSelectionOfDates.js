@@ -4,6 +4,7 @@ import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
+import TableHeadreStatistic from './TableHeadreStatistic';
 let PrivateSelectionOfDates = () => {
 
     const { Text } = Typography;
@@ -116,8 +117,7 @@ let PrivateSelectionOfDates = () => {
 
     }
     let countVotess=(arrOfVotes)=>{
-        arrOfVotes = arrOfVotes.filter(av =>isNaN(Object.values(av)[0]) && isNaN(Object.values(av)[1]) );
-        
+        arrOfVotes = arrOfVotes.filter(av => isNaN(Object.values(av)[0]) || Object.values(av)[Object.values(av).length - 1] != "You");
         let votesStadistic=[]
 
         arrOfVotes.forEach((v)=>{
@@ -213,44 +213,18 @@ let PrivateSelectionOfDates = () => {
                     if(d.date==daySelected){
                         
                         return d.times.map((t) => {
-                            let temp =  infoOfVotes.find((vInfo)=>vInfo.timeId==t.id)
-                            const dateArray = d.date.split("-");
-                            const year = parseInt(dateArray[0], 10);
-                            const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-                            const day = parseInt(dateArray[2], 10);
-                            const dateObject = new Date(year, month, day)
-                            const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-                            const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
-
+                            
                             columns.push({
                                 date:d.date,
-                                title:
-                                    <Flex key={t.id} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                                        <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                                        <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                                        <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                                        {temp?
-                                            <Tooltip  color='#448BA7' placement="top" title={temp.names.join(', ')}>
-                                                <Text>
-                                                    <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                                    {temp.numberOfVotes}
-                                                </Text>
-                                            </Tooltip>
-                                            :
-                                            <Text>
-                                                <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                                0
-                                            </Text>
-                                        }
-                                    </Flex>,
+                                title: <TableHeadreStatistic dateData={d} timeInfo={t} infoOfVotes={infoOfVotes} />,
 
                                 dataIndex: t.id,
                                 key: t.id,
                                 render: (timeId) => (
                                    
                                     (timeId == "x" || !timeId ? 
-                                      timeId : 
+                                    <Flex justify='center' style={{ width: "100%" }}>{timeId}</Flex> 
+                                        : 
                                       (
                                         ((( numberOfVotersPerWindow(infoOfVotes, timeId)< meetingDataRef.current.amountOfLimitedSelection)
                                          &&
@@ -259,11 +233,13 @@ let PrivateSelectionOfDates = () => {
                                          !meetingDataRef.current.limitedSelection
                                         )
                                         && 
-                                        <Checkbox 
-                                            disabled={name === "" && nameRef.current === ""} 
-                                            defaultChecked={idsRef.current.includes(timeId)}  
-                                            onChange={(e) => { checkBoxChange(e, timeId) }}
-                                        />
+                                        <Flex justify='center' style={{width:"100%"}}>
+                                            <Checkbox 
+                                                disabled={name === "" && nameRef.current === ""} 
+                                                defaultChecked={idsRef.current.includes(timeId)}  
+                                                onChange={(e) => { checkBoxChange(e, timeId) }}
+                                            />
+                                        </Flex>
                                       )
                                     )
                                 )
@@ -278,38 +254,10 @@ let PrivateSelectionOfDates = () => {
             }else{
                 
                     return d.times.map((t) => {
-                        let temp =  infoOfVotes.find((vInfo)=>vInfo.timeId==t.id)
-                        const dateArray = d.date.split("-");
-                        const year = parseInt(dateArray[0], 10);
-                        const month = parseInt(dateArray[1], 10) - 1; // Month is 0-indexed in JavaScript
-                        const day = parseInt(dateArray[2], 10);
-                        const dateObject = new Date(year, month, day)
-                        const monthAbbreviation = new Intl.DateTimeFormat('en-US', { month: 'short' }).format(dateObject);
-                        const dayOfWeek = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(dateObject);
-
+                      
                         columns.push({
                             date:d.date,
-                            title:
-                                <Flex key={t.id} align='center' justify='center' vertical style={{ width: "100%" }}  >
-                                    <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-                                    <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-                                    <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-                                    <Text style={{ fontWeight: 'bold' }}>{t.time}</Text>
-                                    {temp?
-                                        <Tooltip  color='#448BA7' placement="top" title={temp.names.join(', ')}>
-                                            <Text>
-                                                <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                                {temp.numberOfVotes}
-                                            </Text>
-                                        </Tooltip>
-                                        :
-                                        <Text>
-                                            <Image style={{width:20, height:20}} src='/audience.png'></Image>
-                                            0
-                                        </Text>
-                                    }
-                                </Flex>,
-
+                            title: <TableHeadreStatistic dateData={d} timeInfo={t} infoOfVotes={infoOfVotes} />,
                             dataIndex: t.id,
                             key: t.id,
                             render: (timeId) => (

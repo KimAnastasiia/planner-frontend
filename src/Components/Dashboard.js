@@ -37,8 +37,9 @@ let DashboarComponent = () => {
     return (
 
 
-        <Flex justify='center' style={{ width: "100%", height: "100vh" }}>
-            <Flex vertical style={{ width: "700px", backgroundColor: "white", padding: "30px" }}>
+        <div style={{ width: "100%", height: "70vh", overflowY: "auto" }}>
+        <Flex justify='center' >
+            <Flex vertical style={{ width: "700px", backgroundColor: "white", padding: "30px"}}>
                 <Flex justify="flex-end" style={{width:"100%", marginBottom:20}}>
                     <Search
                         onChange={(e)=>{setSearch(e.target.value.toUpperCase())}}
@@ -50,12 +51,12 @@ let DashboarComponent = () => {
                 
                 {meetings.filter((meeting)=>{
                 return meeting.title.toUpperCase().includes(search)
-            }).map((m) =>
-                    <Flex align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom:20 }}>
+                }).map((m) =>
+                    <Flex key={m.id} align='center' justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom:20 }}>
                         <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} style={{ width: "10%" }}>
                             <Avatar icon={<UserOutlined />} />
                         </Flex>
-                        <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} justify='center' vertical style={{ width: "70%", height: "100%" }}>
+                        <Flex onClick={()=>{navigate("/votes/"+m.token+"/"+m.id)}} justify='center' vertical style={{ width: "70%" }}>
                             <Title style={{ margin: 0, fontWeight: 'bold' }} level={4}>{m.title}</Title>
                             <Flex align='center'>
                                 <CalendarOutlined style={{ fontSize: 20 }} />
@@ -70,6 +71,8 @@ let DashboarComponent = () => {
                     </Flex>)}
             </Flex>
         </Flex>
+    </div>
+    
     )
 }
 export default DashboarComponent

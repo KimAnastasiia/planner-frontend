@@ -15,8 +15,7 @@ let AccounSettings = () => {
     const [user, setUser]=useState({
 
         email:"",
-        name:"",
-        password:""
+        name:""
 
     })
 
@@ -39,9 +38,11 @@ let AccounSettings = () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(user)
+            
         })
         if(response.ok){
             success()
+            localStorage.setItem('name', user.name);
         }else{
             failed()
         }
