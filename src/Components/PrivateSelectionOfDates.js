@@ -5,6 +5,7 @@ import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import TableHeadreStatistic from './TableHeadreStatistic';
+import RenderDates from './RenderDates';
 let PrivateSelectionOfDates = () => {
 
     const { Text } = Typography;
@@ -16,6 +17,7 @@ let PrivateSelectionOfDates = () => {
     let meetingDataRef = useRef();
     const { Title } = Typography;
     const idsRef = useRef([]);
+    let [page, setPage] = useState(1)
     let [votes, setVotes] = useState([])
     let [voted, setVoted]=useState(false)
     let [columnsArray, setColumnsArray] = useState([])
@@ -53,6 +55,7 @@ let PrivateSelectionOfDates = () => {
         let response = await fetch(Commons.baseUrl + `/participation/${id}?access_token=${localStorage.getItem("access_token")}`)
         if (response.ok) {
             let data = await response.json()
+
             data.map((el)=>{
                 if(el.userEmail==localStorage.getItem("email")){
                     setName(el.name)
@@ -101,18 +104,21 @@ let PrivateSelectionOfDates = () => {
         if (response.ok) {
             let data = await response.json()
             console.log(data)
-            setMeetingData(data[0])
-            let infoOfVotes = await getVotes(data[0])
-            createColumns(data[0], arrayOfDates, infoOfVotes)
-            let arrayInSelect=[]
 
-            data[0].dates.forEach((d)=>{
-                arrayInSelect.push({
-                    value:d.date,
-                    label:d.date
+            if(data.length>0){ 
+                setMeetingData(data[0])
+                let infoOfVotes = await getVotes(data[0])
+                createColumns(data[0], arrayOfDates, infoOfVotes)
+                let arrayInSelect=[]
+
+                data[0].dates.forEach((d)=>{
+                    arrayInSelect.push({
+                        value:d.date,
+                        label:d.date
+                    })
                 })
-            })
-            setDatesForSelect(arrayInSelect)
+                setDatesForSelect(arrayInSelect)
+            }   
         }
 
     }
@@ -168,7 +174,7 @@ let PrivateSelectionOfDates = () => {
     }
     const numberOfVotersPerWindow = (arraySelectedWindows, timeId) => {
         const objectWithAmountOfNumberOfVotesForId =  arraySelectedWindows?.find(v => v.timeId === timeId);
-        return objectWithAmountOfNumberOfVotesForId?.numberOfVotes   
+        return objectWithAmountOfNumberOfVotesForId?.numberOfVotes || 0  
     };
     let checkBoxChange = (e, timeId) => {
 
@@ -295,19 +301,6 @@ let PrivateSelectionOfDates = () => {
         getMeetingInfo(arrayOfDates)
 
     }
-
-    let renderDates = () => {
-
-        return (
-            <div style={{ width: "100%"}}>
-                <Table
-                    columns={columnsArray}
-                    dataSource={votes}
-                    bordered
-                />
-            </div>
-        )
-    }
     let searchObjectsByValueOne=(array)=>{
         const result = [];
         array.forEach(obj => {
@@ -406,7 +399,7 @@ let PrivateSelectionOfDates = () => {
                                 <Switch onChange={hideAllPastDates}/>
                             </Flex>
                         </Flex>
-                        {renderDates()}
+                        <RenderDates columnsArray={columnsArray} votes={votes}/>
                     </Flex>
                 </Flex>
             </Flex>
@@ -485,7 +478,7 @@ let PrivateSelectionOfDates = () => {
                         onChange={onChangeSelect}
                         style={{width:"30%", marginBottom:10}}
                     />
-                    {renderDates()}
+                    <RenderDates columnsArray={columnsArray} votes={votes}/>
                 </Flex>
             </Flex>
         </Flex>

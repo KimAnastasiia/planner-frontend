@@ -5,6 +5,7 @@ import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import TableHeadreStatistic from './TableHeadreStatistic';
+import RenderDates from './RenderDates';
 let SelectionOfDates = () => {
 
     const { Text } = Typography;
@@ -136,7 +137,6 @@ let SelectionOfDates = () => {
                 })
                 setDatesForSelect(arrayInSelect)
             }
-
         }
 
     }
@@ -376,19 +376,6 @@ let SelectionOfDates = () => {
 
     }
 
-    let renderDates = () => {
-
-        return (
-            <div style={{ width: "100%"}}>
-                <Table
-                    columns={columnsArray}
-                    dataSource={votes}
-                    //scroll={{ x: 900, y: 170 }}
-                    bordered
-                />
-            </div>
-        )
-    }
     let searchObjectsByValueOne=(array)=>{
         const result = [];
         array.forEach(obj => {
@@ -492,7 +479,7 @@ let SelectionOfDates = () => {
                                     <Switch onChange={hideAllPastDates}/>
                                 </Flex>
                             </Flex>
-                            {renderDates()}
+                            <RenderDates columnsArray={columnsArray} votes={votes}/>
                         </Flex>
                     </Flex>
                 </Flex>
@@ -574,7 +561,7 @@ let SelectionOfDates = () => {
                             onChange={onChangeSelect}
                             style={{width:"30%", marginBottom:10}}
                         />
-                        {renderDates()}
+                        <RenderDates columnsArray={columnsArray} votes={votes}/>
                     </Flex>
                 </Flex>
             </Flex>

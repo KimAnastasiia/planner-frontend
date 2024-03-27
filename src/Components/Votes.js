@@ -7,10 +7,12 @@ import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import TableHeadreStatistic from './TableHeadreStatistic';
+import RenderDates from './RenderDates';
 let VotesComponent = () => {
     const [datesForSelect, setDatesForSelect] = useState([])
     const { Text } = Typography;
     const { meetingId } = useParams()
+    let [page, setPage] = useState(1)
     const { token } = useParams()
     let [meetingData, setMeetingData] = useState()
     const { Title } = Typography;
@@ -163,18 +165,6 @@ let VotesComponent = () => {
      
         return votesStadistic
     }
-    let renderDates = () => {
-
-        return (
-            <div style={{ width: "100%" }}>
-                <Table
-                    columns={columnsArray}
-                    dataSource={votes}
-                    bordered
-                />
-            </div>
-        )
-    }
     let shareLink = () => {
         navigator.share({
             title: 'Shared Link',
@@ -216,7 +206,7 @@ let VotesComponent = () => {
                             onChange={onChangeSelect}
                             style={{ width: "90%", marginBottom: 10 }}
                         />
-                        {renderDates()}
+                        <RenderDates columnsArray={columnsArray} votes={votes}/>
                     </Flex>
                 </Flex>
             </Flex>
@@ -253,7 +243,7 @@ let VotesComponent = () => {
                         onChange={onChangeSelect}
                         style={{ width: "30%", marginBottom: 10 }}
                     />
-                    {renderDates()}
+                     <RenderDates columnsArray={columnsArray} votes={votes}/>
                 </Flex>
             </Flex>
         </Flex>

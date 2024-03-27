@@ -5,7 +5,7 @@ import "../App.css"
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import Commons from '../Utility/url';
-
+import moment from 'moment';
 let CreateMeeting = () => {
     const { Search } = Input;
     const { Title } = Typography;
@@ -170,11 +170,23 @@ let CreateMeeting = () => {
     };
     const handleInputChange = (e, name, day) => {
         if (name == "defaultTime") {
-            let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
+            let startHour = String(e[0].$H).padStart(2, "0");
+            let startMinute = String(e[0].$m).padStart(2, "0");
+            let endHour = String(e[1].$H).padStart(2, "0");
+            let endMinute = String(e[1].$m).padStart(2, "0");
+
+            let curTime = startHour + ":" + startMinute + "-" + endHour + ":" + endMinute;
+
             setDefaultTime(curTime)
 
         } else if (name == "time") {
-            let curTime = e[0].$H + ":" + e[0].$m + "-" + e[1].$H + ":" + e[1].$m
+            let startHour = String(e[0].$H).padStart(2, "0");
+            let startMinute = String(e[0].$m).padStart(2, "0");
+            let endHour = String(e[1].$H).padStart(2, "0");
+            let endMinute = String(e[1].$m).padStart(2, "0");
+
+            let curTime = startHour + ":" + startMinute + "-" + endHour + ":" + endMinute;
+
             indexTime.current = indexTime.current + 1
             let copyOfDay = [...selectedDate]
             let currentDay = copyOfDay.find((d) => d.date == day)
@@ -183,7 +195,23 @@ let CreateMeeting = () => {
                 currentDay.times.push({ time: curTime, timeId: indexTime.current })
                 setSelectedDate(copyOfDay)
             }
-        } else {
+
+        } else if(name == "amountOfLimitedSelection"){
+
+            if(e.currentTarget.value>0){
+
+                setFormData({
+                    ...formData,
+                    [name]: e.currentTarget.value
+                });
+
+            }else{
+                messageApi.open({
+                    type: "error",
+                    content: 'You can only choose positive numbers',
+                });
+            }
+        }else {
             setFormData({
                 ...formData,
                 [name]: e.currentTarget.value
@@ -266,7 +294,7 @@ let CreateMeeting = () => {
                     </Flex>
                     {formData.limitedSelection &&
                         <Flex vertical style={{ marginBottom: 20 }}>
-                            <Typography.Title level={5} style={{ marginRight: 20 }}>Amount of limited selection</Typography.Title>
+                            <Typography.Title level={5} style={{ marginRight: 20 }}>Amount of limited selection:</Typography.Title>
                             <Input type="number" value={formData?.amountOfLimitedSelection} style={{ width: "100%" }} onChange={(e) => { handleInputChange(e, "amountOfLimitedSelection") }} />
                         </Flex>}
                     <Flex justify="space-between">
@@ -326,14 +354,16 @@ let CreateMeeting = () => {
 
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>
 
-                <Flex vertical justify="space-around" style={{ width: "100%" }}>
-
-
+                <Flex vertical justify="space-around" align="center" style={{ width: "100%" }}>
 
                     <div style={wrapperStyle}>
                         <Typography.Title style={{ margin: 10 }} level={4}>Date</Typography.Title>
                         <Calendar
                             fullscreen={false}
+                            disabledDate={(current) => {
+                                // Disable dates in the past
+                                return current && current < moment().startOf('day');
+                            }}
                             headerRender={({ value, type, onChange, onTypeChange }) => {
                                 const start = 0;
                                 const end = 12;
@@ -422,43 +452,41 @@ let CreateMeeting = () => {
                                     <Typography.Title level={5} style={{ marginRight: 20 }}>Add same time to all dates</Typography.Title>
                                     <Switch value={sameTimeForAll} onChange={() => { setSameTimeForAll(!sameTimeForAll) }} style={{ width: "30px" }} />
                                 </Flex>
-                                {sameTimeForAll && <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "defaultTime") }} format={"HH:mm"} style={{ margin: 20 }} />}
+                                {sameTimeForAll && <TimePicker.RangePicker value={""} onChange={(e) => { handleInputChange(e, "defaultTime") }} format={"HH:mm"} style={{ margin: 20 }} />}
                             </Flex>}
                         {selectedDate.map((date) =>
 
                             <Flex vertical align="center" style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20 }}>
-                                <Flex justify="space-around" style={{ width:"100%", marginBottom:20}}>
+                                <Flex justify='center' style={{ width: "100%", marginBottom: 20, borderBottom: "1px solid #D3DCE3", paddingBottom: 10 }}>
                                     <Typography.Title level={5}>{date.date}</Typography.Title>
-                                    <Button danger type="dashed" onClick={() => { deleteDay(date.date) }}><DeleteOutlined /></Button>
+                                    <Button type="text" style={{ marginLeft: 15 }} danger onClick={() => { deleteDay(date.date) }}>delete date</Button>
                                 </Flex>
-                                <Flex vertical align="center" style={{width:"100%"}}>
+                                <Flex vertical align="center" style={{ width: "100%" }}>
 
-                                    <Row style={{width:"100%"}} gutter={8}>
-                                        
-                                        {date.times.map((timeObj) =>
+                                    {date.times.sort((a, b) => {
+                                        // Compare time strings directly
+                                        return a.time.localeCompare(b.time);
+                                    }).map((timeObj) =>
 
-                                            <Col span={8} style={{ border: "1px solid #D3DCE3", padding: 20, marginBottom: 20}}>   
-                                                <Typography.Title level={5}>{timeObj.time}</Typography.Title>
-                                                <Button onClick={() => { deleteTimeOfDate(date.day, timeObj.timeId) }} style={{ marginLeft: 20 }}><DeleteOutlined /></Button>
-                                            </Col>
-                                        
-                                        )}
 
-                                    </Row>
-
+                                        <Flex justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 10, marginBottom: 20, width:180 }}>
+                                            <Typography.Title level={5}>{timeObj.time}</Typography.Title>
+                                            <Button danger onClick={() => { deleteTimeOfDate(date.date, timeObj.id) }} style={{ marginLeft: 20 }}><DeleteOutlined /></Button>
+                                        </Flex>
+                                    )}
                                     <Flex align='center'>
                                         <Typography.Title level={5} style={{ marginLeft: 20 }}>Choose time for this date</Typography.Title>
-                                        <TimePicker.RangePicker onChange={(e) => { handleInputChange(e, "time", date.date) }} format={"HH:mm"} style={{ margin: 20 }} />
+                                        <TimePicker.RangePicker value={""} onChange={(e) => { handleInputChange(e, "time", date.date) }} format={"HH:mm"} style={{ margin: 20 }} />
                                     </Flex>
                                 </Flex>
-                             
+
                             </Flex>
                         )}
                     </div>
                 </Flex>
 
                 <Button onClick={CreateNewMeeting} type="primary" style={{ width: "100%", marginTop: "30px" }}>
-                    Submit
+                    Create
                 </Button>
             </Flex>
 
