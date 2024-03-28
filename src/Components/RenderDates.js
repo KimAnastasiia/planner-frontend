@@ -14,13 +14,6 @@ let RenderDates = ({columnsArray,votes}) => {
         
         <div style={{ width: "100%"}}>
             
-            
-            <Table
-                columns={columnsArray.filter(( column , i) => i==0 || (i < (page*5)+1 && i >= ((page-1)*5)+1 ) )}
-                dataSource={votes}
-                bordered
-                pagination={false}
-            />
             <Flex justify="flex-end">
                 <Flex vertical align="center" style={{marginTop:20, width:150}}>
                     <span> Page: { page } of {maxPage}</span>
@@ -40,6 +33,13 @@ let RenderDates = ({columnsArray,votes}) => {
                     
                 </Flex>
             </Flex>
+            <Table
+                columns={columnsArray.filter(( column , i) => i==0 || (i < (page*5)+1 && i >= ((page-1)*5)+1 ) )}
+                dataSource={votes}
+                bordered
+                pagination={false}
+            />
+           
         </div>
     )
 }

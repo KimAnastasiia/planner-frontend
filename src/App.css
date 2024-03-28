@@ -30,6 +30,12 @@
   color: white;
 }
 
+/* Media query for extra small screens */
+@media only screen and (max-width: 575px) {
+  .conditional-text {
+    font-size: 10px; /* Small font size for extra small screens */
+  }
+}
 .App-link {
   color: #61dafb;
 }

@@ -1,13 +1,14 @@
 /* eslint-disable no-undef */
 import React, { useState,useRef, useEffect } from 'react';
-import { Button, Avatar, Flex, Card, Col, Image, Typography, Pagination, Input, Checkbox, Table, Select, Tooltip } from 'antd';
-import { PlusOutlined, UserOutlined, MailOutlined } from '@ant-design/icons';
+import { Button, Avatar, Flex, Card, Col, Image, Typography, Space, Input, Checkbox, Table, Select, Tooltip } from 'antd';
+import { PlusOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 import "../App.css"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import TableHeadreStatistic from './TableHeadreStatistic';
 import RenderDates from './RenderDates';
+import Highlighter from 'react-highlight-words';
 let VotesComponent = () => {
     const [datesForSelect, setDatesForSelect] = useState([])
     const { Text } = Typography;
@@ -20,6 +21,9 @@ let VotesComponent = () => {
     let [columnsArray, setColumnsArray] = useState([])
     let navigate = useNavigate()
     const [isSmallScreen, setIsSmallScreen] = useState(false);
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
     useEffect(() => {
         getMeetingInfo()
     }, [])
@@ -94,6 +98,109 @@ let VotesComponent = () => {
 
     }
 
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+      };
+    const handleReset = (clearFilters) => {
+        clearFilters();
+        setSearchText('');
+      };
+    const getColumnSearchProps = (dataIndex) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+          <div
+            style={{
+              padding: 8,
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <Input
+              ref={searchInput}
+              placeholder={`Search ${dataIndex}`}
+              value={selectedKeys[0]}
+              onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+              onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              style={{
+                marginBottom: 8,
+                display: 'block',
+              }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                icon={<SearchOutlined />}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters && handleReset(clearFilters)}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  confirm({
+                    closeDropdown: false,
+                  });
+                  setSearchText(selectedKeys[0]);
+                  setSearchedColumn(dataIndex);
+                }}
+              >
+                Filter
+              </Button>
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  close();
+                }}
+              >
+                close
+              </Button>
+            </Space>
+          </div>
+        ),
+        filterIcon: (filtered) => (
+          <SearchOutlined
+            style={{
+              color: filtered ? '#1677ff' : undefined,
+            }}
+          />
+        ),
+        onFilter: (value, record) =>
+          record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+        onFilterDropdownOpenChange: (visible) => {
+          if (visible) {
+            setTimeout(() => searchInput.current?.select(), 100);
+          }
+        },
+        render: (text) =>
+          searchedColumn === dataIndex ? (
+            <Highlighter
+              highlightStyle={{
+                backgroundColor: '#ffc069',
+                padding: 0,
+              }}
+              searchWords={[searchText]}
+              autoEscape
+              textToHighlight={text ? text.toString() : ''}
+            />
+          ) : (
+            text
+          ),
+      });
     let createColumns = (currentMeeting, arrayOfDates, infoOfVotes) => {
 
         let columns = []
@@ -102,7 +209,8 @@ let VotesComponent = () => {
             title: 'Participants',
             dataIndex: 'name',
             key: 'name',
-            fixed: 'left'
+            fixed: 'left',
+            ...getColumnSearchProps('name')
         })
 
         currentMeeting?.dates?.map((d) => {

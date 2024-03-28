@@ -16,11 +16,11 @@ const TableHeadreStatistic = ({dateData, timeInfo, infoOfVotes}) => {
 
     return (
 
-        <Flex key={timeInfo.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
-            <Text style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
-            <Title style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Title>
-            <Text style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
-            <Text style={{ fontWeight: 'bold' }}>{timeInfo.time}</Text>
+        <Flex  key={timeInfo.time} align='center' justify='center' vertical style={{ width: "100%" }}  >
+            <Text className="conditional-text" style={{ fontWeight: 'bold', color: "gray" }}>{monthAbbreviation}</Text>
+            <Text className="conditional-text" style={{ margin: 0, fontWeight: 'bold' }} level={2}>{day}</Text>
+            <Text className="conditional-text" style={{ fontWeight: 'bold', color: "gray" }}>{dayOfWeek}</Text>
+            <Text className="conditional-text" style={{ fontWeight: 'bold' }}>{timeInfo.time}</Text>
             {infoOfVotesForStadistic ?
                 <Tooltip color='#448BA7' placement="top" title={infoOfVotesForStadistic.names.join(', ')}>
                     <Flex align='center'>
