@@ -17,29 +17,32 @@ import "./App.css"
 import ListOfInvitations from "./Components/ListOfInvitations";
 import PrivateSelectionOfDates from "./Components/PrivateSelectionOfDates";
 import AccounSettings from "./Components/AccounSettings";
+import Commons from "./Utility/url";
 
 let App = () => {
 
   let navigate = useNavigate()
   let location = useLocation()
-  let [login, setLogin] = useState(false);
+
 
   const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
-    checkLoginIsActive();
+    verification();
   }, [localStorage.getItem("access_token")])
 
-  let checkLoginIsActive = async () => {
+  const verification = async () => {
 
-    if (localStorage.getItem("access_token") == null) {
-      setLogin(false);
-      return;
-    } else {
-      setLogin(true)
+    let response = await fetch(Commons.baseUrl + "/users?access_token=" + localStorage.getItem("access_token"))
+
+    if (response.ok) {
+
+    }else{
+      localStorage.removeItem("access_token");
+      navigate("/login")
     }
-  }
 
+  }
 
   const openNotification = (placement, text, type) => {
     api[type]({

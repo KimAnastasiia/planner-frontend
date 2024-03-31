@@ -14,7 +14,6 @@ let DashboarComponent = () => {
     useEffect(() => {
         getmeetings()
     }, [])
-    
     let deleteMeeting=async(id, token)=>{
 
         let response = await fetch(Commons.baseUrl + `/meetings/${id}/${token}?access_token=`+ localStorage.getItem("access_token"), {

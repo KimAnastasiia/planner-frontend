@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, message, Flex, Input, Switch, Calendar, Avatar, Divider, List, Skeleton, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, message, Flex, Input, Switch, Calendar, Tooltip, Divider, List, Skeleton, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
+import { InfoCircleOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
@@ -35,25 +35,38 @@ let CreateMeeting = () => {
         }
     }, [sameTimeForAll, defaultTime, selectedDate.length]);
 
-    const isValidEmail = (email) => {
+    const isValidEmail = (emails) => {
         // Regular expression for basic email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+        const emailArray = emails.split(',').map(email => email.trim()).filter((email) => email != "");
+
+        // Check each email in the array
+        for (let i = 0; i < emailArray.length; i++) {
+            if (!emailRegex.test(emailArray[i])) {
+                return false; // If any email is invalid, return false
+            }
+        }
+
+        return emailArray; // If all emails are valid, return true
     }
     const addInvited = () => {
-        if (isValidEmail(actualInvited)) {
-            let copyOfInvatied = [...formData.invited]
-            let exist = copyOfInvatied.find((p) => p == actualInvited)
-            if (!exist) {
-                copyOfInvatied.push(actualInvited)
-                setFormData({
-                    ...formData,
-                    invited: copyOfInvatied
-                });
-                setActualInvited("")
-            } else {
-                invatedPersonAlreadyExistInList()
-            }
+        let arrOfEmails = isValidEmail(actualInvited)
+        if (arrOfEmails) {
+
+            let copyOfInvited = [...formData.invited];
+            arrOfEmails.forEach(email => {
+                if (!copyOfInvited.includes(email)) {
+                    copyOfInvited.push(email);
+                } else {
+                    invatedPersonAlreadyExistInList();
+                }
+            });
+
+            setFormData({
+                ...formData,
+                invited: copyOfInvited
+            });
+            setActualInvited("");
         } else {
             messageApi.open({
                 type: 'error',
@@ -196,22 +209,22 @@ let CreateMeeting = () => {
                 setSelectedDate(copyOfDay)
             }
 
-        } else if(name == "amountOfLimitedSelection"){
+        } else if (name == "amountOfLimitedSelection") {
 
-            if(e.currentTarget.value>0){
+            if (e.currentTarget.value > 0) {
 
                 setFormData({
                     ...formData,
                     [name]: e.currentTarget.value
                 });
 
-            }else{
+            } else {
                 messageApi.open({
                     type: "error",
                     content: 'You can only choose positive numbers',
                 });
             }
-        }else {
+        } else {
             setFormData({
                 ...formData,
                 [name]: e.currentTarget.value
@@ -303,7 +316,15 @@ let CreateMeeting = () => {
                     </Flex>
                     {formData.private &&
                         <Flex style={{ marginBottom: 10 }}>
-                            <Input value={actualInvited} onChange={(e) => { setActualInvited(e.currentTarget.value) }} placeholder="Add emails of invited" />
+                            <Input suffix={
+                                <Tooltip color='#448BA7' title="You can add emails separated by commas">
+                                    <InfoCircleOutlined
+                                        style={{
+                                            color: 'green',
+                                        }}
+                                    />
+                                </Tooltip>
+                            } value={actualInvited} onChange={(e) => { setActualInvited(e.currentTarget.value) }} placeholder="Add emails of invited" />
                             <Button onClick={addInvited}>Add</Button>
                         </Flex>
                     }
@@ -469,7 +490,7 @@ let CreateMeeting = () => {
                                     }).map((timeObj) =>
 
 
-                                        <Flex justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 10, marginBottom: 20, width:180 }}>
+                                        <Flex justify="space-between" style={{ border: "1px solid #D3DCE3", padding: 10, marginBottom: 20, width: 180 }}>
                                             <Typography.Title level={5}>{timeObj.time}</Typography.Title>
                                             <Button danger onClick={() => { deleteTimeOfDate(date.date, timeObj.id) }} style={{ marginLeft: 20 }}><DeleteOutlined /></Button>
                                         </Flex>

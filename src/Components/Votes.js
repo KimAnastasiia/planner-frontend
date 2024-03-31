@@ -292,12 +292,18 @@ let VotesComponent = () => {
     return votesStadistic
   }
   let shareLink = () => {
-    navigator.share({
-      title: 'Shared Link',
-      text: 'Check out this link!',
-      url: `/participate/${token}/${meetingId}`
-    })
-  }
+    const link = `${window.location.origin}/participate/${token}/${meetingId}`;
+
+    // Copy link to clipboard
+    navigator.clipboard.writeText(link)
+        .then(() => {
+            console.log('Link copied to clipboard:', link);
+        })
+        .catch((error) => {
+            console.error('Error copying link to clipboard:', error);
+        });
+}
+
   if (isSmallScreen) {
     return (
       <Flex style={{ minHeight: "100vh", width: "100%" }}>
