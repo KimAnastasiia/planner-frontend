@@ -25,7 +25,7 @@ let MenuApiComponent = () => {
     };
   }, [arrow]);
   let disconnect = async () => {
-    localStorage.removeItem("access_token");
+    localStorage.clear();
     navigate("/login")
   }
   const content = (

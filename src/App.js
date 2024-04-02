@@ -37,9 +37,11 @@ let App = () => {
 
     if (response.ok) {
 
+    }else if(localStorage.getItem("voterToken")){
+      
     }else{
-      localStorage.removeItem("access_token");
-      navigate("/login")
+      localStorage.clear();
+  
     }
 
   }

@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button, Avatar, Flex, Popconfirm, Col, Image, Typography, Space, Input, Checkbox, Table, Select, Tooltip } from 'antd';
 import { DeleteOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 import "../App.css"
+import { CSVLink } from "react-csv"
 import Commons from '../Utility/url';
 import { useParams } from "react-router-dom";
 import { Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
@@ -13,7 +14,6 @@ let VotesComponent = () => {
   const [datesForSelect, setDatesForSelect] = useState([])
   const { Text } = Typography;
   const { meetingId } = useParams()
-  let [page, setPage] = useState(1)
   const { token } = useParams()
   let [meetingData, setMeetingData] = useState()
   const { Title } = Typography;
@@ -59,10 +59,10 @@ let VotesComponent = () => {
       result.map((n) => {
         data.forEach((v) => {
           if (n.userEmail == v.userEmail) {
-            n[v.time.id] = "x"
+            n[v.time.time + " " + v.time.date.date] = "x"
           }
         })
-  
+
       })
 
       setVotes(result)
@@ -201,7 +201,7 @@ let VotesComponent = () => {
         text
       ),
   });
-  const handleDelete = async(voterInfo) => {
+  const handleDelete = async (voterInfo) => {
     //delete from backend and update vote set getVotes()
     let response = await fetch(Commons.baseUrl + `/participation/ownerDelete/${meetingId}/${voterInfo.userEmail}?access_token=` + localStorage.getItem("access_token"), {
       method: 'DELETE'
@@ -237,8 +237,8 @@ let VotesComponent = () => {
             return d.times.map((t) => {
               columns.push({
                 title: <TableHeadreStatistic dateData={d} timeInfo={t} infoOfVotes={infoOfVotes} />,
-                dataIndex: t.id,
-                key: t.id,
+                dataIndex: t.time + " " + d.date,
+                key: t.time + " " + d.date,
                 render: (timeId) => ((timeId == "x" || !timeId) &&
                   <Flex justify='center' style={{ width: "100%" }}>{timeId}</Flex>)
 
@@ -251,8 +251,8 @@ let VotesComponent = () => {
           columns.push({
             date: d.date,
             title: <TableHeadreStatistic dateData={d} timeInfo={t} infoOfVotes={infoOfVotes} />,
-            dataIndex: t.id,
-            key: t.id,
+            dataIndex: t.time + " " + d.date,
+            key: t.time + " " + d.date,
             render: (timeId) => ((timeId == "x" || !timeId) &&
               <Flex justify='center' style={{ width: "100%" }}>{timeId}</Flex>)
 
@@ -296,13 +296,13 @@ let VotesComponent = () => {
 
     // Copy link to clipboard
     navigator.clipboard.writeText(link)
-        .then(() => {
-            console.log('Link copied to clipboard:', link);
-        })
-        .catch((error) => {
-            console.error('Error copying link to clipboard:', error);
-        });
-}
+      .then(() => {
+        console.log('Link copied to clipboard:', link);
+      })
+      .catch((error) => {
+        console.error('Error copying link to clipboard:', error);
+      });
+  }
 
   if (isSmallScreen) {
     return (
@@ -338,6 +338,20 @@ let VotesComponent = () => {
               onChange={onChangeSelect}
               style={{ width: "90%", marginBottom: 10 }}
             />
+            <CSVLink
+              filename={"Expense_Table.csv"}
+              data={votes}
+              className="btn btn-primary"
+              onClick={() => {
+                message.success("The file is downloading")
+              }}
+            >
+              <img
+                src={"/excel.png"}
+                alt="excel Icon"
+                style={{ marginRight: 8, width: 25, height: 25 }}
+              />
+            </CSVLink>
             <RenderDates columnsArray={columnsArray} votes={votes} />
           </Flex>
         </Flex>
@@ -375,7 +389,26 @@ let VotesComponent = () => {
             onChange={onChangeSelect}
             style={{ width: "30%", marginBottom: 10 }}
           />
+          <Flex justify="flex-end" style={{ width:"100%"}} align='center'>
+            <CSVLink
+              filename={"Expense_Table.csv"}
+              data={votes}
+              className="btn btn-primary"
+              onClick={() => {
+                message.success("The file is downloading")
+              }}
+              
+            >
+              <img
+                src={"/excel.png"}
+                alt="excel Icon"
+                style={{ marginRight: 8, width: 25 }}
+              />
+            </CSVLink>
+            
+          </Flex>
           <RenderDates columnsArray={columnsArray} votes={votes} />
+         
         </Flex>
       </Flex>
     </Flex>
