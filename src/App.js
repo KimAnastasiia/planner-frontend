@@ -18,6 +18,7 @@ import ListOfInvitations from "./Components/ListOfInvitations";
 import PrivateSelectionOfDates from "./Components/PrivateSelectionOfDates";
 import AccounSettings from "./Components/AccounSettings";
 import Commons from "./Utility/url";
+import MainPage from "./Components/MainPage";
 
 let App = () => {
 
@@ -105,7 +106,10 @@ let App = () => {
           <Route path="/account" element={
             <AccounSettings />
           }></Route>
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="/" element={
+            <MainPage />
+          }></Route>
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Content>
 
