@@ -2,9 +2,11 @@ import React from 'react';
 import { Button, Checkbox, Form, Input } from 'antd';
 import { Flex, Radio } from 'antd';
 import { useGoogleLogin } from '@react-oauth/google';
-import { backendUrl } from '../Global';
+
 import { useEffect, useState } from "react";
 import { wait } from '@testing-library/user-event/dist/utils';
+import Commons from '../Utility/url';
+
 import { useNavigate } from "react-router-dom";
 const Registration = () => {
 
@@ -14,7 +16,7 @@ const Registration = () => {
     let navigate = useNavigate()
     let CreateAccount = async () => {
 
-        let response = await fetch("http://localhost:3001/users", {
+        let response = await fetch(Commons.baseUrl + "/users", {
 
             method: "POST",
             headers: {
@@ -50,7 +52,7 @@ const Registration = () => {
     const checkUser = async (access_token) => {
         localStorage.setItem('access_token', access_token);
 
-        let response = await fetch(backendUrl + "/users?access_token=" + access_token)
+        let response = await fetch(Commons.baseUrl + "/users?access_token=" + access_token)
 
         if (response.ok) {
             console.log("Logined")

@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, message, Form, Input } from 'antd';
 import { Flex, Radio } from 'antd';
 import { useGoogleLogin } from '@react-oauth/google';
-import { backendUrl } from '../Global';
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Commons from '../Utility/url';
