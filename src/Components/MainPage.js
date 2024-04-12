@@ -1,6 +1,6 @@
 import { Button, Avatar, Flex, Typography, message, Input, Checkbox, Table, Switch, Tooltip, Select, Image } from 'antd';
 import "../App.css"
-
+import { Col, Row } from 'antd';
 
 const MainPage = () => {
     const { Title } = Typography;
@@ -13,20 +13,23 @@ const MainPage = () => {
 
             </Flex>
             <Flex>
-                <Flex align='center' style={{padding:30 }}>
+
+            <Row>
+                <Col  md={24} lg={12}>
                     <h3 style={{fontSize:25, lineHeight:1.5, color:"#4EB5E8"}}>
                         Welcome to MeetFlow, your all-in-one solution for organizing seamless meetings, whether online or offline. With MeetFlow, you can effortlessly schedule, manage, and host meetings, making collaboration a breeze. Say goodbye to scheduling conflicts and communication chaos – MeetFlow has got you covered.
                     </h3>
-
-                </Flex>
-                <Flex align='top'>
+                </Col>
+                <Col md={24} lg={12}>
                     <img
                         src={"/descarga.jpg"}
                         alt="comunication Icon"
-                        style={{ width: 750, height: 600 }}
+                        style={{ width: '100%' }}
                     />
-                    
-                </Flex> 
+                </Col>
+            </Row>
+
+               
                 
             </Flex>
         </Flex>

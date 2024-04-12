@@ -41,7 +41,7 @@ let App = () => {
     }else if(localStorage.getItem("voterToken")){
       
     }else{
-      localStorage.clear();
+      //localStorage.clear();
   
     }
 

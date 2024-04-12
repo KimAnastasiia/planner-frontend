@@ -271,14 +271,14 @@ let VotesComponent = () => {
     let votesStadistic = []
 
     arrOfVotes.forEach((v) => {
-      const attributeNamesArray = Object.keys(v);
-      attributeNamesArray.forEach((atrName) => {
-        if (atrName != "name") {
-          let exist = votesStadistic.find((date) => date.timeId == atrName)
+      const attributeDatesArray = Object.keys(v);
+      attributeDatesArray.forEach((atrDtae) => {
+        if (atrDtae != "name" && atrDtae != "userEmail") {
+          let exist = votesStadistic.find((voteStadistic) => voteStadistic.date == atrDtae)
           if (!exist) {
             votesStadistic.push({
               numberOfVotes: 1,
-              timeId: atrName,
+              date: atrDtae,
               names: [v.name]
             })
           } else {

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Button, message, Flex, Input, Switch, List, Skeleton, Calendar, TimePicker, Col, Radio, Row, Select, Typography, theme } from 'antd';
+import { Button, message, Flex, Input, Switch, List, Skeleton, Calendar, TimePicker, Col, Radio, Row, Select, Typography,Form, theme } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import "../App.css"
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -274,18 +274,81 @@ let EditMeeting = () => {
             {contextHolder}
             <Flex vertical justify='center' align='center' style={{ minHeight: "100vh", backgroundColor: "white", padding: 20, margin: 5 }}>
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Edit</Title>
+                <Form
+                    name="basic"
+                    labelCol={{
+                        span: 8,
+                    }}
+                    wrapperCol={{
+                        span: 16,
+                    }}
+                    style={{
+                        maxWidth: 600,
 
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    }}
+                    initialValues={{
+                        remember: true,
+                       
+                      
+                    }}
+                    fields={[
+                        {
+                          name: ["descriptions"],
+                          value: formData.descriptions,
+                        },
+                        {
+                            name: ["title"],
+                            value: formData.title,
+                          },
+                          {
+                            name: ["location"],
+                            value: formData.location,
+                          },
+                      ]}
+                    onFinish={EditMeeting}
+
+                    autoComplete="off"
+               
+                >
                 <Flex vertical justify="space-around">
+                    <Form.Item
+                            label="Title"
+                            name="title"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input title!',
+                                },
+                            ]}
+                  
 
-                    <Typography.Title level={5}>Title</Typography.Title>
-                    <Input value={formData.title} onChange={(e) => { handleInputChange(e, "title") }} />
+                    >
+                        <Input onChange={(e) => { handleInputChange(e, "title") }} />
+                    </Form.Item>
+                    <Form.Item
+                            label="Descriptions"
+                            name="descriptions"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: 'Please input descriptions!',
+                                },
+                            ]}
+                          
+                        >
+                    <Input  onChange={(e) => { handleInputChange(e, "descriptions") }} />
+                    </Form.Item>
 
-                    <Typography.Title level={5}>Description</Typography.Title>
-                    <Input value={formData.descriptions} onChange={(e) => { handleInputChange(e, "descriptions") }} />
-
-                    <Typography.Title level={5}>Location</Typography.Title>
-                    <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
-
+                    <Form.Item
+                        label="Location"
+                        name="location"
+                    >
+                        <Input value={formData.location} onChange={(e) => { handleInputChange(e, "location") }} />
+                    </Form.Item>
 
                     <Flex justify="space-between" style={{ marginTop: 20 }}>
                         <Typography.Title level={5} style={{ marginRight: 20 }}>Online conference</Typography.Title>
@@ -354,7 +417,7 @@ let EditMeeting = () => {
                         </div>}
 
                 </Flex>
-
+                             
                 <Title style={{ width: "100%", height: "40px", borderBottom: "1px solid #D3DCE3", margin: 30 }} level={3}>Add your times</Title>
 
                 <Flex vertical justify='center'  align="center"  style={{ width: "100%" }}>
@@ -486,9 +549,10 @@ let EditMeeting = () => {
                     </div>
                 </Flex>
 
-                <Button onClick={EditMeeting} type="primary" style={{ width: "100%", marginTop: "30px" }}>
+                <Button  type="primary" htmlType="submit"  style={{ width: "100%", marginTop: "30px" }}>
                     Submit
                 </Button>
+                </Form>    
             </Flex>
 
         </Flex>

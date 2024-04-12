@@ -41,7 +41,7 @@ let SelectionOfDates = () => {
     };
     
     useEffect(() => {
-        console.log(window.innerWidth)
+       
         
         handleResize()
         window.addEventListener('resize', handleResize);
@@ -52,6 +52,7 @@ let SelectionOfDates = () => {
     }, [window.innerWidth]);
 
     useEffect(() => {
+        console.log(localStorage.getItem("voter_token"))
         if(voterToken){
             localStorage.setItem('voter_token', voterToken);
         }
@@ -73,9 +74,10 @@ let SelectionOfDates = () => {
 
     let getVotes = async (meetingData) => {
 
-        let response = await fetch(Commons.baseUrl + `/participation-public/${id}?voter_token=${localStorage.getItem("voter_token")}`)
+        let response = await fetch(Commons.baseUrl + `/participation-public/${id}`)
         if (response.ok) {
             let data = await response.json()
+            console.log(localStorage.getItem("voter_token"))
             data.map((el)=>{
                 if(el.token==localStorage.getItem("voter_token")){
                     setName(el.name)
@@ -107,7 +109,7 @@ let SelectionOfDates = () => {
                 let objetPutYourChoose = {
                     name: "You"
                 }
-                console.log(meetingData)
+             
                 meetingData?.dates?.forEach((d) => {
                     d.times.forEach((t) => objetPutYourChoose[t.id] = t.id)
                 })
@@ -124,7 +126,7 @@ let SelectionOfDates = () => {
         let response = await fetch(Commons.baseUrl + `/meetings-public?meetingId=${id}&token=${token}`)
         if (response.ok) {
             let data = await response.json()
-            console.log(data)
+   
 
             if(data.length>0){     
                 setMeetingData(data[0])
@@ -204,7 +206,6 @@ let SelectionOfDates = () => {
     }
     let addParticipation = async (time) => {
 
-        console.log("Email:"+emailRef.current)
         let response = await fetch(Commons.baseUrl + "/participation-public?voter_token="+localStorage.getItem("voter_token"), {
             method: "POST",
             headers: {
@@ -255,8 +256,7 @@ let SelectionOfDates = () => {
             idsRef.current = copyOfTimesIds.filter(time => time !== timeId);
             deleteParticipation(timeId)
         }
-    
-        console.log(idsRef.current); // This will log the updated array
+
     }
     const markCheckBoxIfItsExist=(infoOfVotes, timeId)=>{
 
@@ -519,7 +519,7 @@ let SelectionOfDates = () => {
             const currentDate = new Date(Date.now());
             let tempArray = [...columnsArray]
             tempArray=tempArray.filter((c)=>new Date(c.date)>currentDate||c.title=="Participants")
-            console.log(tempArray)
+   
             setColumnsArray(tempArray)
         }else{
             getMeetingInfo()
