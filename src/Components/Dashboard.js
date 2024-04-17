@@ -36,7 +36,7 @@ let DashboarComponent = () => {
     return (
 
 
-        <div style={{ width: "100%", height: "70vh", overflowY: "auto" }}>
+        <div style={{ width: "100%", height: "80vh", overflowY: "auto" }}>
         <Flex justify='center' >
             <Flex vertical style={{ width: "700px", backgroundColor: "white", padding: "30px"}}>
                 <Flex justify="flex-end" style={{width:"100%", marginBottom:20}}>

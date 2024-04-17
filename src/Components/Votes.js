@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Avatar, Flex, Popconfirm, Col, Image, Typography, Space, Input, Checkbox, Table, Select, Tooltip } from 'antd';
+import { Button, Avatar, Flex, message, Col, Image, Typography, Space, Input, Checkbox, Table, Select, Tooltip } from 'antd';
 import { DeleteOutlined, UserOutlined, SearchOutlined } from '@ant-design/icons';
 import "../App.css"
 import { CSVLink } from "react-csv"
@@ -24,6 +24,7 @@ let VotesComponent = () => {
   const [searchText, setSearchText] = useState('');
   const [searchedColumn, setSearchedColumn] = useState('');
   const searchInput = useRef(null);
+  const [messageApi, contextHolder] = message.useMessage();
   useEffect(() => {
     getMeetingInfo()
   }, [])
@@ -298,6 +299,10 @@ let VotesComponent = () => {
     navigator.clipboard.writeText(link)
       .then(() => {
         console.log('Link copied to clipboard:', link);
+        messageApi.open({
+          type: 'success',
+          content: 'You have successfully copied the link.',
+      });
       })
       .catch((error) => {
         console.error('Error copying link to clipboard:', error);
@@ -306,15 +311,21 @@ let VotesComponent = () => {
 
   if (isSmallScreen) {
     return (
-      <Flex style={{ minHeight: "100vh", width: "100%" }}>
-        <Flex vertical style={{ border: "1px solid #D3DCE3", minHeight: "100vh", backgroundColor: "white", width: "100%", borderRadius: 10 }}>
-          <Flex vertical style={{ borderBottom: "1px solid #D3DCE3", height: "40%", padding: 10, justifyContent: "space-around" }}>
+      <Flex style={{ width: "100%" }}>
+         {contextHolder}
+        <Flex vertical style={{ border: "1px solid #D3DCE3", backgroundColor: "white", width: "100%", borderRadius: 10 }}>
+          <Flex vertical style={{ borderBottom: "1px solid #D3DCE3", padding: 10, justifyContent: "space-around" }}>
+          {!meetingData?.private && 
+              <Flex style={{ width:"100%", marginBottom:20}} justify="center" align='center'>
+                <Input value={`${window.location.origin}/participate/${token}/${meetingId}`}></Input>
+                <Button style={{marginLeft:20, backgroundColor:"#C5DFF8"}} onClick={() => { shareLink() }} >Copy link</Button>
+              </Flex>
+            }
             <Flex style={{ justifyContent: "center" }}>
               <Title level={2}>{meetingData?.title}</Title>
             </Flex>
             <Flex>
-              <Button type='primary' style={{ marginLeft: 5, marginRight: 5 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
-              {!meetingData?.private && <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
+              <Button type='primary' style={{ marginLeft: 5, marginRight: 5, backgroundColor:"#4A55A2" }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
             </Flex>
             <Text style={{ marginTop: 10 }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
             <Flex style={{ justifyContent: "center", marginTop: 10 }}>
@@ -359,12 +370,19 @@ let VotesComponent = () => {
     )
   }
   return (
-    <Flex align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
+    <Flex align='center' justify='center' style={{ width: "100%" }}>
+      {contextHolder}
       <Flex vertical style={{ border: "1px solid #D3DCE3", backgroundColor: "white", borderRadius: 10, padding: 20, width: "60%" }}>
+      {!meetingData?.private && 
+              <Flex style={{ width:"100%"}} justify="center" align='center'>
+                <Text>{`${window.location.origin}/participate/${token}/${meetingId}`}</Text>
+                <Button style={{marginLeft:20, backgroundColor:"#C5DFF8"}} onClick={() => { shareLink() }} >Copy link</Button>
+              </Flex>
+            }
         <Flex style={{ borderBottom: "1px solid #D3DCE3" }}>
 
           <Flex justify="space-between" vertical style={{ width: "70%" }}>
-
+            
             <Title level={2}>{meetingData?.title}</Title>
             <Text style={{ fontWeight: 'bold' }}><Avatar size="small" style={{ marginRight: 10 }} icon={<UserOutlined />} />You are the organizer of the group event.</Text>
             <Text style={{ fontWeight: 'bold' }}><img src='/pin.png' style={{ height: 20, width: 20, marginRight: 10 }} alt='location Icon' />{meetingData?.location} </Text>
@@ -372,10 +390,8 @@ let VotesComponent = () => {
             <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={true}></Checkbox>Yes, i can </Text>
             <Text style={{ fontWeight: 'bold' }}><Checkbox style={{ height: 20, width: 20, marginRight: 10 }} checked={false}></Checkbox>No, i can not </Text>
           </Flex>
-          <Flex align='center'>
-
-            <Button type='primary' style={{ marginLeft: 20, marginRight: 20 }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
-            {!meetingData?.private && <Button onClick={() => { shareLink() }} type='primary'>Share invite</Button>}
+          <Flex align="end" justify='center' vertical >
+            <Button type='primary' style={{ marginLeft: 20, marginRight: 20, backgroundColor:"#4A55A2" }} onClick={() => { navigate(`/edit/meeting/${token}/${meetingData?.id}`) }}>Edit</Button>
           </Flex>
         </Flex>
         <Flex align='center' vertical style={{ width: "100%", height: "60%", padding: 20 }}>

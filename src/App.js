@@ -64,7 +64,7 @@ let App = () => {
     <Layout style={{ minHeight: "100vh" }}>
       {contextHolder}
 
-      <Header style={{backgroundColor:"#E8D913"}}>
+      <Header style={{backgroundColor:"#C5DFF8"}}>
         <Flex align='center' justify="center" style={{ height:"100%", width:"100%"}}>
           {!localStorage.getItem("access_token")&&<MenuComponent/>}
           {localStorage.getItem("access_token")&&<MenuApiComponent/>}
@@ -113,7 +113,7 @@ let App = () => {
         </Routes>
       </Content>
 
-      <Footer style={{ textAlign: "center" }}> MeetFlow Planner</Footer>
+      <Footer style={{ textAlign: "center" }}> SlotMeeting Planner</Footer>
 
     </Layout>
   );

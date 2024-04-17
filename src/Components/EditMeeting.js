@@ -114,7 +114,7 @@ let EditMeeting = () => {
                 type: 'success',
                 content: 'You have successfully edited the data.',
             });
-
+            navigate("/dashboard")
         } else {
 
             messageApi.open({
@@ -549,7 +549,7 @@ let EditMeeting = () => {
                     </div>
                 </Flex>
 
-                <Button  type="primary" htmlType="submit"  style={{ width: "100%", marginTop: "30px" }}>
+                <Button shape="round" type="primary" htmlType="submit"  style={{ width: "100%", marginTop: "30px", backgroundColor:"#4A55A2" }}>
                     Submit
                 </Button>
                 </Form>    

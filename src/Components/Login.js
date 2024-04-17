@@ -136,7 +136,7 @@ const Login = () => {
                             style={{ width: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}
                         >
 
-                            <Button onClick={verificateUser} shape="round" style={{ backgroundColor: "#933D55", width: "300px", height: 50, fontSize: 17, }} type="primary" htmlType="submit">
+                            <Button onClick={verificateUser} shape="round" style={{ backgroundColor: "#4A55A2", width: "300px", height: 50, fontSize: 17, }} type="primary" htmlType="submit">
                                 Login
                             </Button>
 
@@ -144,7 +144,7 @@ const Login = () => {
                     </Form>
                     <Flex align='top' justify='center' style={{ width: "100%", height: "40%" }}>
                         <Button
-                            style={{ width: "300px", height: 50, backgroundColor: "white", color: "black", fontSize: 17, border: "1px solid #933D55" }}
+                            style={{ width: "300px", height: 50, backgroundColor: "white", color: "black", fontSize: 17, border: "1px solid #4A55A2" }}
                             shape="round"
                             onClick={() => loginGoogle()}
 

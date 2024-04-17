@@ -53,8 +53,8 @@ let MenuApiComponent = () => {
   return (
     <Flex justify="space-between" align='center' style={{ height: "100%", width: "90%" }} >
       <Flex  style={{ textAlign: "center", height: "100%" }}>
-        <CalendarOutlined style={{ fontSize: '35px', marginRight: 10 }} />
-        <h2>MeetFlow</h2>
+        <CalendarOutlined style={{ fontSize: '35px', marginRight: 10, color:"#4A55A2" }} />
+        <h2 style={{color:"#4A55A2"}}>SlotMeeting</h2>
       </Flex>
       <Flex>
 
@@ -67,7 +67,7 @@ let MenuApiComponent = () => {
             </Popover>
           </Flex>
         </Button>
-        <Button onClick={() => { navigate("/createMeeting") }} type="primary" shape="round" size={size} style={{ backgroundColor: "#9D7D6F", marginLeft: 10 }}>
+        <Button onClick={() => { navigate("/createMeeting") }} type="primary" shape="round" size={size} style={{ backgroundColor: "#4A55A2", marginLeft: 10 }}>
           + Crear
         </Button>
        

@@ -555,7 +555,7 @@ let CreateMeeting = () => {
                         </div>
                     </Flex>
 
-                    <Button type="primary" htmlType="submit" style={{ width: "100%", marginTop: "30px" }}>
+                    <Button type="primary" shape="round" htmlType="submit" style={{ width: "100%", marginTop: "30px", backgroundColor:"#4A55A2" }}>
                         Submit
                     </Button>
 

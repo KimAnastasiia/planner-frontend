@@ -8,7 +8,7 @@ let RenderDates = ({ columnsArray, votes }) => {
     const [maxPage, setMaxPage] = useState(1)
 
     useEffect(() => {
-        setMaxPage(Math.ceil((columnsArray?.length - 1) / 5))
+        setMaxPage(Math.ceil((columnsArray?.length - 1) / 3))
         console.log(votes)
     }, [columnsArray])
 
@@ -38,7 +38,7 @@ let RenderDates = ({ columnsArray, votes }) => {
                 </Flex>
             </Flex>
             <Table
-                columns={columnsArray.filter((column, i) => i == 0 || (i < (page * 5) + 1 && i >= ((page - 1) * 5) + 1))}
+                columns={columnsArray.filter((column, i) => i == 0 || (i < (page * 3) + 1 && i >= ((page - 1) * 3) + 1))}
                 dataSource={votes}
                 bordered
                 pagination={false}

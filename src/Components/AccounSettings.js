@@ -77,7 +77,7 @@ let AccounSettings = () => {
                     <Text>Name</Text>
                     <Input onChange={(e)=>{setUser({...user, name:e.target.value})}} style={{width:"50%"}} value={user.name}></Input>
                 </Flex>
-                <Button onClick={updateData} type="primary">Save</Button>
+                <Button shape="round" style={{backgroundColor:"#4A55A2"}} onClick={updateData} type="primary">Save</Button>
             </Flex>
         </Flex>
     )

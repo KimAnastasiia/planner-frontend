@@ -594,7 +594,7 @@ let SelectionOfDates = () => {
         }
 
         return (
-            <Flex vertical align='center' justify='center' style={{ height: "100vh", width: "100%" }}>
+            <Flex vertical align='center' justify='center' style={{ width: "100%" }}>
                 {contextHolder}
                 {voted && 
                         <Flex vertical style={{ border: "1px solid #D3DCE3",backgroundColor: "white", borderRadius: 10, padding: 10, marginBottom:10, width:"66%"}}>
